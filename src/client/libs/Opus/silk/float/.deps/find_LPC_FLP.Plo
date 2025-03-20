@@ -1,0 +1,109 @@
+silk/float/find_LPC_FLP.lo: silk/float/find_LPC_FLP.c config.h \
+ silk/define.h silk/errors.h silk/typedef.h include/opus_types.h \
+ D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/stdint.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/stdint.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/crtdefs.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/corecrt.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/_mingw.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/_mingw_mac.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/_mingw_secapi.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/vadefs.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/sdks/_mingw_ddk.h \
+ D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/stddef.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/stddef.h \
+ include/opus_defines.h include/opus_types.h \
+ D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/float.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/float.h silk/float/main_FLP.h \
+ silk/float/SigProc_FLP.h silk/SigProc_FIX.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/string.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/sec_api/string_s.h \
+ silk/resampler_structs.h silk/macros.h celt/arch.h celt/ecintrin.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/math.h \
+ D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/limits.h \
+ D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/syslimits.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/limits.h celt/arch.h \
+ celt/cpu_support.h celt/x86/x86cpu.h silk/x86/SigProc_FIX_sse.h \
+ silk/Inlines.h silk/MacroCount.h silk/MacroDebug.h celt/float_cast.h \
+ D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/xmmintrin.h \
+ D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/mmintrin.h \
+ D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/mm_malloc.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/stdlib.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/corecrt_wstdlib.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/sec_api/stdlib_s.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/malloc.h \
+ D:/mingw64_13.2/x86_64-w64-mingw32/include/errno.h \
+ D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/emmintrin.h \
+ silk/main.h silk/SigProc_FIX.h silk/define.h silk/structs.h \
+ celt/entenc.h celt/entcode.h celt/ecintrin.h celt/entdec.h silk/tables.h \
+ silk/PLC.h silk/main.h silk/control.h silk/debug.h silk/x86/main_sse.h \
+ silk/float/structs_FLP.h silk/typedef.h silk/structs.h silk/debug.h \
+ silk/tuning_parameters.h
+config.h:
+silk/define.h:
+silk/errors.h:
+silk/typedef.h:
+include/opus_types.h:
+D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/stdint.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/stdint.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/crtdefs.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/corecrt.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/_mingw.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/_mingw_mac.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/_mingw_secapi.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/vadefs.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/sdks/_mingw_ddk.h:
+D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/stddef.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/stddef.h:
+include/opus_defines.h:
+include/opus_types.h:
+D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/float.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/float.h:
+silk/float/main_FLP.h:
+silk/float/SigProc_FLP.h:
+silk/SigProc_FIX.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/string.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/sec_api/string_s.h:
+silk/resampler_structs.h:
+silk/macros.h:
+celt/arch.h:
+celt/ecintrin.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/math.h:
+D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/limits.h:
+D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/syslimits.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/limits.h:
+celt/arch.h:
+celt/cpu_support.h:
+celt/x86/x86cpu.h:
+silk/x86/SigProc_FIX_sse.h:
+silk/Inlines.h:
+silk/MacroCount.h:
+silk/MacroDebug.h:
+celt/float_cast.h:
+D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/xmmintrin.h:
+D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/mmintrin.h:
+D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/mm_malloc.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/stdlib.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/corecrt_wstdlib.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/sec_api/stdlib_s.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/malloc.h:
+D:/mingw64_13.2/x86_64-w64-mingw32/include/errno.h:
+D:/mingw64_13.2/lib/gcc/x86_64-w64-mingw32/13.2.0/include/emmintrin.h:
+silk/main.h:
+silk/SigProc_FIX.h:
+silk/define.h:
+silk/structs.h:
+celt/entenc.h:
+celt/entcode.h:
+celt/ecintrin.h:
+celt/entdec.h:
+silk/tables.h:
+silk/PLC.h:
+silk/main.h:
+silk/control.h:
+silk/debug.h:
+silk/x86/main_sse.h:
+silk/float/structs_FLP.h:
+silk/typedef.h:
+silk/structs.h:
+silk/debug.h:
+silk/tuning_parameters.h:

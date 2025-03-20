@@ -65,6 +65,9 @@ void ServerWindow::componentsInitStates()
     ui->pushButtonStopPlayer->setEnabled(false);
     ui->pushButtonRestartPlayer->setEnabled(false);
 
+    ui->lineEditIP->setText("127.0.0.1");
+    ui->lineEditPort->setText("8080");
+
 }
 
 void ServerWindow::componentsConnections()
@@ -73,6 +76,39 @@ void ServerWindow::componentsConnections()
     connect(ui->pushButtonStartPlayer, &QPushButton::clicked, this, &ServerWindow::startAudio, Qt::DirectConnection);
     connect(ui->pushButtonStopPlayer, &QPushButton::clicked, this, &ServerWindow::stopAudio, Qt::DirectConnection);
     connect(ui->pushButtonRestartPlayer, &QPushButton::clicked, this, &ServerWindow::restartAudio, Qt::DirectConnection);
+    connect(ui->pushButtonOpenConnection, &QPushButton::clicked, this, &ServerWindow::handleConnectionInputs, Qt::DirectConnection);
+}
+
+void ServerWindow::handleConnectionInputs()
+{
+    QString ipAddress = ui->lineEditIP->text();
+    QString portString = ui->lineEditPort->text();
+
+    if (ipAddress.isEmpty() || portString.isEmpty()) {
+        QMessageBox::critical(this, "Ошибка", "Пожалуйста, заполните все поля.");
+        return;
+    }
+
+    bool ok;
+    quint16 port = portString.toUShort(&ok);
+    if (!ok) {
+        QMessageBox::critical(this, "Ошибка", "Неправильный формат порта.");
+        return;
+    }
+
+    if (port < 1 || port > 65535) {
+        QMessageBox::critical(this, "Ошибка", "Порт должен быть в диапазоне от 1 до 65535.");
+        return;
+    }
+
+    QHostAddress address(ipAddress);
+    if (address.isNull()) {
+        QMessageBox::critical(this, "Ошибка", "Неправильный формат IP-адреса.");
+        return;
+    }
+    quint16 port16 = static_cast<quint16>(port);
+
+    emit openConnectionNetwork(address, port16);
 }
 
 void ServerWindow::startAudio()

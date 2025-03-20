@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/GUI">
+        <file>images/playButton.png</file>
+        <file>images/restartButton.png</file>
+        <file>images/stopButton.png</file>
+        <file>images/bucket.png</file>
+        <file>images/download.png</file>
+    </qresource>
+</RCC>

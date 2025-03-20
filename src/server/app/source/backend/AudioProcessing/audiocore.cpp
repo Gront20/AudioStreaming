@@ -132,8 +132,6 @@ bool AudioCore::loadFile(const std::string &filename)
         av_packet_unref(packet);
     }
 
-    emit sendAudioSamples(audioBuffer);
-
     return !audioBuffer.empty();
 }
 
@@ -240,6 +238,9 @@ int AudioCore::paCallback(const void *inputBuffer, void *outputBuffer,
 
     size_t samplesToCopy = framesPerBuffer * CHANNELS;
     size_t remainingSamples = player->audioBuffer.size() - player->bufferIndex;
+
+    std::vector<float> audioChunk(out, out + samplesToCopy);
+    emit player->sendAudioSamples(audioChunk);
 
     if (remainingSamples < samplesToCopy) {
         player->sendAudioStatus(player->m_fileName, AUDIO::CORE::STATUS::END);

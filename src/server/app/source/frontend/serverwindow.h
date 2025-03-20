@@ -52,17 +52,17 @@ private slots:
     void startAudio();
     void restartAudio();
     void stopAudio();
+    void handleConnectionInputs();
 
 // Signals
 
 signals:
 
     void fileSelected();
-    void connectNetwork(QString ip, QString port);
 
     void audioFileStartProcessing(const QString& filePath);
-
     void audioPlayerChangeState(AUDIO::HANDLER::MODE mode);
+    void openConnectionNetwork(const QHostAddress &ip, const quint16 port);
 
 private:
     QChart *m_chart{nullptr};

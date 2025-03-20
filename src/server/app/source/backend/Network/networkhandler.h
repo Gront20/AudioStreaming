@@ -16,6 +16,7 @@ public slots:
 
     void sendAudioSamples(const std::vector<float> &samples);
     void handleAudioStatusUpdate(const AUDIO::CORE::STATUS &status);
+    void handleNetworkConnection(const QHostAddress &ip, const quint16 port);
 
 private:
 

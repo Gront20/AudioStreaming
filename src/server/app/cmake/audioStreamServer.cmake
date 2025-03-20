@@ -13,6 +13,7 @@ add_components(Core VersionInfo Project)
 
 _add_library(Ffmpeg)
 _add_library(PortAudio)
+_add_library(Opus)
 
 # ==================================================================================================
 # ========================================= CONFIGURATION ==========================================

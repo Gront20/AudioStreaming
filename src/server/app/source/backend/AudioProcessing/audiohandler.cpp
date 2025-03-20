@@ -25,7 +25,7 @@ void AudioHandler::audioStatusCatched(const QString &fileName, const AUDIO::CORE
     QString message = audioStatusToString(status, fileName);
     emit sendAudioStatusMessage(message);
 
-    // to GUI logic
+    // to GUI and Network logic
     emit handleAudioStatusUpdate(status);
 }
 
