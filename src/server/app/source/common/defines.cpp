@@ -46,3 +46,40 @@ QString AUDIO::CORE::audioStatusToString(const AUDIO::CORE::STATUS &status, cons
         return QString("Audio file \"%1\" has unknown status").arg(fileName);
     }
 }
+
+
+QString NETWORK::CORE::networkCoreStatusToString(const NETWORK::CORE::STATUS code)
+{
+    QString message{};
+    switch (code) {
+    case NETWORK::CORE::STATUS::ALREADY_BOUNDED:
+        message = QString("UDP socket is already bound to the same address and port.");
+        break;
+    case NETWORK::CORE::STATUS::FAILED_BIND:
+        message = QString("Failed to bind UDP socket!");
+        break;
+    case NETWORK::CORE::STATUS::ERROR_OPUS_INIT:
+        message = QString("Opus error initializaion!");
+        break;
+    case NETWORK::CORE::STATUS::ERROR_OPUS_ENCODE:
+        message = QString("Opus encoding error!");
+        break;
+    case NETWORK::CORE::STATUS::ERROR_SOCKET:
+        message = QString("Socket occurs error.");
+        break;
+    case NETWORK::CORE::STATUS::STATE_CHANGED:
+        message = QString("Socket state changed.");
+        break;
+    case NETWORK::CORE::STATUS::BOUNDED:
+        message = QString("UDP socket bounded");
+        break;
+    case NETWORK::CORE::STATUS::CLOSED:
+        message = QString("UDP socket closed connection!");
+        break;
+    default:
+        message = QString("Unknown error occurred.");
+        break;
+    }
+    return message;
+}
+

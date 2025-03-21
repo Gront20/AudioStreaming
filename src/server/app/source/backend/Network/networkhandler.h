@@ -12,11 +12,21 @@ public:
     explicit NetworkHandler(QObject *parent = nullptr);
     ~NetworkHandler();
 
+private slots:
+
+    void handleNetworkCoreStatusData(const QVariant data);
+
+signals:
+
+    void sendMessageToAppLogger(const QString message);
+    void sendNetworkDataSended(const quint32 data);
+
 public slots:
 
-    void sendAudioSamples(const std::vector<float> &samples);
+    void sendAudioSamples(const QVector<float> &samples);
     void handleAudioStatusUpdate(const AUDIO::CORE::STATUS &status);
-    void handleNetworkConnection(const QHostAddress &ip, const quint16 port);
+    void handleNetworkConnectionOpen(const QHostAddress &ip, const quint16 port);
+    void handleNetworkConnectionClose();
 
 private:
 

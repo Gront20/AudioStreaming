@@ -56,7 +56,7 @@ void AudioHandler::receiveAudioFilePath(const QString& path)
     changeAudioStatus(AUDIO::HANDLER::STATUS::ISREADY);
 }
 
-void AudioHandler::sendAudioSamples(const std::vector<float> &samples)
+void AudioHandler::sendAudioSamples(const QVector<float> &samples)
 {
     emit sendAudioSamplesFromCore(samples);
 }

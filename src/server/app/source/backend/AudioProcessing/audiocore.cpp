@@ -239,7 +239,7 @@ int AudioCore::paCallback(const void *inputBuffer, void *outputBuffer,
     size_t samplesToCopy = framesPerBuffer * CHANNELS;
     size_t remainingSamples = player->audioBuffer.size() - player->bufferIndex;
 
-    std::vector<float> audioChunk(out, out + samplesToCopy);
+    QVector<float> audioChunk(out, out + samplesToCopy);
     emit player->sendAudioSamples(audioChunk);
 
     if (remainingSamples < samplesToCopy) {

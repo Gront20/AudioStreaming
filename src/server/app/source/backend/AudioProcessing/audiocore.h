@@ -38,7 +38,7 @@ public:
 
 signals:
 
-    void sendAudioSamples(const std::vector<float> &samples);
+    void sendAudioSamples(const QVector<float> &samples);
     void sendCurrentStateError(const AUDIO::CORE::ERROR_HANDLER &errorCode);
     void sendAudioStatus(const QString &fileName, const AUDIO::CORE::STATUS &status);
 

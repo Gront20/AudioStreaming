@@ -20,7 +20,7 @@ public slots:
 
     void receiveAudioFilePath(const QString& path);
     void audioPlayerChangeState(AUDIO::HANDLER::MODE mode);
-    void sendAudioSamples(const std::vector<float> &samples);
+    void sendAudioSamples(const QVector<float> &samples);
 
     void startAudio();
     void stopAudio();
@@ -37,7 +37,7 @@ signals:
     void sendErrorMessage(const QString &message);
     void sendAudioStatusMessage(const QString &message);
     void handleAudioStatusUpdate(const AUDIO::CORE::STATUS &status);
-    void sendAudioSamplesFromCore(const std::vector<float> &samples);
+    void sendAudioSamplesFromCore(const QVector<float> &samples);
 
 private:
 

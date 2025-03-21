@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>942</width>
-    <height>699</height>
+    <width>768</width>
+    <height>676</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Main Window Server</string>
@@ -17,23 +23,47 @@
    <widget class="QWidget" name="widgetAudioFileSelector" native="true">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>200</y>
-      <width>311</width>
+      <x>10</x>
+      <y>280</y>
+      <width>321</width>
       <height>81</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
+      <layout class="QFormLayout" name="formLayout">
+       <property name="leftMargin">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
+        <number>6</number>
+       </property>
+       <item row="0" column="0">
         <widget class="QLabel" name="labelPath">
          <property name="text">
           <string>Path:</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="0" column="1">
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <widget class="QLineEdit" name="lineEditPathSelectedInfo"/>
@@ -65,13 +95,28 @@
    <widget class="QWidget" name="widgetFileInfo" native="true">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>280</y>
-      <width>311</width>
+      <x>10</x>
+      <y>360</y>
+      <width>321</width>
       <height>271</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>6</number>
+     </property>
+     <property name="topMargin">
+      <number>6</number>
+     </property>
+     <property name="rightMargin">
+      <number>6</number>
+     </property>
+     <property name="bottomMargin">
+      <number>6</number>
+     </property>
      <item>
       <widget class="QLabel" name="labelFileInfo">
        <property name="text">
@@ -103,10 +148,10 @@
    <widget class="QWidget" name="widgetConnector" native="true">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>10</y>
-      <width>311</width>
-      <height>121</height>
+      <x>60</x>
+      <y>180</y>
+      <width>211</width>
+      <height>101</height>
      </rect>
     </property>
     <widget class="QLineEdit" name="lineEditIP">
@@ -123,7 +168,7 @@
      <property name="geometry">
       <rect>
        <x>70</x>
-       <y>50</y>
+       <y>40</y>
        <width>113</width>
        <height>24</height>
       </rect>
@@ -132,9 +177,9 @@
     <widget class="QPushButton" name="pushButtonOpenConnection">
      <property name="geometry">
       <rect>
-       <x>100</x>
-       <y>90</y>
-       <width>80</width>
+       <x>140</x>
+       <y>70</y>
+       <width>50</width>
        <height>24</height>
       </rect>
      </property>
@@ -145,8 +190,8 @@
     <widget class="QLabel" name="labelIP">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>20</y>
+       <x>40</x>
+       <y>10</y>
        <width>49</width>
        <height>16</height>
       </rect>
@@ -158,8 +203,8 @@
     <widget class="QLabel" name="labelPort">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>50</y>
+       <x>40</x>
+       <y>40</y>
        <width>49</width>
        <height>16</height>
       </rect>
@@ -168,19 +213,44 @@
       <string>Port:</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButtonCloseConnection">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>70</y>
+       <width>51</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Close</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="widgetAppLogger" native="true">
     <property name="geometry">
      <rect>
       <x>330</x>
-      <y>280</y>
+      <y>360</y>
       <width>421</width>
       <height>271</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <property name="spacing">
-      <number>0</number>
+      <number>6</number>
+     </property>
+     <property name="leftMargin">
+      <number>6</number>
+     </property>
+     <property name="topMargin">
+      <number>6</number>
+     </property>
+     <property name="rightMargin">
+      <number>6</number>
+     </property>
+     <property name="bottomMargin">
+      <number>6</number>
      </property>
      <item>
       <widget class="QLabel" name="labelAppLogger">
@@ -297,15 +367,15 @@
      <rect>
       <x>330</x>
       <y>10</y>
-      <width>411</width>
-      <height>271</height>
+      <width>421</width>
+      <height>351</height>
      </rect>
     </property>
     <widget class="QWidget" name="widgetMediaPlayerControls" native="true">
      <property name="geometry">
       <rect>
-       <x>70</x>
-       <y>230</y>
+       <x>80</x>
+       <y>300</y>
        <width>270</width>
        <height>42</height>
       </rect>
@@ -340,7 +410,7 @@
        <x>0</x>
        <y>0</y>
        <width>411</width>
-       <height>231</height>
+       <height>301</height>
       </rect>
      </property>
     </widget>
@@ -348,10 +418,10 @@
    <widget class="QWidget" name="widgetBroadcast" native="true">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>130</y>
-      <width>311</width>
-      <height>71</height>
+      <x>10</x>
+      <y>10</y>
+      <width>321</width>
+      <height>171</height>
      </rect>
     </property>
    </widget>
@@ -361,7 +431,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>942</width>
+     <width>768</width>
      <height>21</height>
     </rect>
    </property>

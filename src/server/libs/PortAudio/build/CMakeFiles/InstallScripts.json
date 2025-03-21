@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"C:/portaudio/build/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

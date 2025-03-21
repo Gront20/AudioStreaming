@@ -10,7 +10,6 @@ app/cmake/versioninfo/version-build.ver
 *.lai
 *.so
 *.so.*
-*.dll
 *.dylib
 
 # Qt-es

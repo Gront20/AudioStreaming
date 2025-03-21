@@ -42,13 +42,16 @@ void BaseAppCore::initializeNetworkHandler()
 
         m_networkHandlerObject->moveToThread(&m_appServerNetworkHandlerThread);
 
-connect(m_audioHandlerObject, &AudioHandler::handleAudioStatusUpdate, m_networkHandlerObject, &NetworkHandler::handleAudioStatusUpdate);
+        connect(m_audioHandlerObject, &AudioHandler::handleAudioStatusUpdate, m_networkHandlerObject, &NetworkHandler::handleAudioStatusUpdate);
 
         connect(&m_appServerNetworkHandlerThread, &QThread::finished, m_networkHandlerObject, &QObject::deleteLater, Qt::QueuedConnection);
 
         connect(m_audioHandlerObject, &AudioHandler::sendAudioSamplesFromCore, m_networkHandlerObject, &NetworkHandler::sendAudioSamples);
-        connect(m_mainWindowObject, &ServerWindow::openConnectionNetwork, m_networkHandlerObject, &NetworkHandler::handleNetworkConnection, Qt::QueuedConnection);
+        connect(m_mainWindowObject, &ServerWindow::openConnectionNetwork, m_networkHandlerObject, &NetworkHandler::handleNetworkConnectionOpen, Qt::QueuedConnection);
+        connect(m_mainWindowObject, &ServerWindow::closeConnectionNetwork, m_networkHandlerObject, &NetworkHandler::handleNetworkConnectionClose, Qt::QueuedConnection);
         connect(m_audioHandlerObject, &AudioHandler::handleAudioStatusUpdate, m_networkHandlerObject, &NetworkHandler::handleAudioStatusUpdate, Qt::QueuedConnection);
+        connect(m_networkHandlerObject, &NetworkHandler::sendMessageToAppLogger, m_mainWindowObject, &ServerWindow::recieveMessage);
+        connect(m_networkHandlerObject, &NetworkHandler::sendNetworkDataSended, m_mainWindowObject, &ServerWindow::addPacket);
 
         m_appServerNetworkHandlerThread.start();
 
