@@ -42,7 +42,7 @@ public slots:
 
     void recieveMessage(const QString &message);
     void handleAudioStatusUpdate(const AUDIO::CORE::STATUS &status);
-    void recieveAudioSamples(const std::vector<float> &samples);
+    void recieveAudioSamples(const QVector<float> &samples, const int &frameSize);
 
 // slots for GUI
 

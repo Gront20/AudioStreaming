@@ -44,6 +44,7 @@ void BaseAppCore::initializeNetworkHandler()
         connect(&m_appClientNetworkHandlerThread, &QThread::finished, m_networkHandlerObject, &QObject::deleteLater, Qt::QueuedConnection);
 
         connect(m_networkHandlerObject, &NetworkHandler::sendAudioDataToAudio, m_audioHandlerObject, &AudioHandler::recieveAudioData, Qt::QueuedConnection);
+        connect(m_networkHandlerObject, &NetworkHandler::sendAudioDataToAudio, m_mainWindowObject, &ClientWindow::recieveAudioSamples, Qt::QueuedConnection);
         connect(m_mainWindowObject, &ClientWindow::connectNetwork, m_networkHandlerObject, &NetworkHandler::handleNetworkConnection);
 
         m_appClientNetworkHandlerThread.start();

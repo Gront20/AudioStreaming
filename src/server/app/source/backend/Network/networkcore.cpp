@@ -56,12 +56,12 @@ void NetworkCore::closeConnection()
 
 void NetworkCore::setDestination(const QHostAddress &address, quint16 port)
 {
-    if (QThread::currentThread() != m_udpSocket->thread()) {
-        QMetaObject::invokeMethod(m_udpSocket, [this, address, port]() {
-            setDestination(address, port);
-        }, Qt::QueuedConnection);
-        return;
-    }
+    // if (QThread::currentThread() != m_udpSocket->thread()) {
+    //     QMetaObject::invokeMethod(m_udpSocket, [this, address, port]() {
+    //         setDestination(address, port);
+    //     }, Qt::QueuedConnection);
+    //     return;
+    // }
 
     QMutexLocker locker(&m_mutex);
     m_clientAddress = address;
@@ -75,7 +75,7 @@ void NetworkCore::setDestination(const QHostAddress &address, quint16 port)
 
     m_udpSocket->abort();
 
-    if (!m_udpSocket->bind(address, port)) {
+    if (!m_udpSocket->bind(m_clientAddress, m_clientPort)) {
         emit sendSocketStatus(QVariant(static_cast<int>(NETWORK::CORE::STATUS::FAILED_BIND)));
         return;
     } else {

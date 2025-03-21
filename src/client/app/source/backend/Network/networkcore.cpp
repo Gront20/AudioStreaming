@@ -35,6 +35,14 @@ bool NetworkCore::initOpus(int sampleRate, int channels) {
 }
 
 void NetworkCore::startListening() {
+
+    if (QThread::currentThread() != m_udpSocket->thread()) {
+        QMetaObject::invokeMethod(m_udpSocket, [this]() {
+                startListening();
+            }, Qt::QueuedConnection);
+        return;
+    }
+
     if (!m_listenPort) {
         qWarning() << "Listening port not set!";
         return;
@@ -73,7 +81,6 @@ void NetworkCore::processPendingDatagrams() {
                                               opusData.size(), decodedSamples.data(),
                                               decodedSamples.size() / m_channels, 0);
             if (frameSize > 0) {
-                qDebug() << "Received and decoded" << frameSize << "samples";
                 emit sendAudioData(decodedSamples, frameSize);
             } else {
                 qWarning() << "Opus decoding error";

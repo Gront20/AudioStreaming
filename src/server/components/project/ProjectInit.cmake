@@ -90,17 +90,27 @@ macro(init_build)
     update_output_name()
     core_init_namespace()
 
+    get_filename_component(MINGW_PATH ${CMAKE_CXX_COMPILER} DIRECTORY)
+
+    get_filename_component(MINGW_PATH ${MINGW_PATH} DIRECTORY)
+
+    message(STATUS "MinGW path: ${MINGW_PATH}")
+
     if(QT_VERSION_MAJOR EQUAL 6)
         qt_finalize_executable(${PROJECT_NAME})
     endif()
 
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_PREFIX_PATH}/bin/windeployqt.exe
-            $<TARGET_FILE:${PROJECT_NAME}>
-            --no-compiler-runtime
-            --no-translations
-    )
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${WINDEPLOYQT_EXECUTABLE}
+                $<TARGET_FILE:${PROJECT_NAME}>
+                --no-compiler-runtime
+                --no-translations
+                --release
+        )
+    endif()
 
+    # Копируем нужные DLL после сборки
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${PROJECT_SOURCE_DIR}/libs/PortAudio/bin/libportaudio.dll
@@ -108,6 +118,9 @@ macro(init_build)
             ${PROJECT_SOURCE_DIR}/libs/Ffmpeg/bin/avutil-58.dll
             ${PROJECT_SOURCE_DIR}/libs/Ffmpeg/bin/avformat-60.dll
             ${PROJECT_SOURCE_DIR}/libs/Ffmpeg/bin/swresample-4.dll
+            ${MINGW_PATH}/bin/libgcc_s_seh-1.dll
+            ${MINGW_PATH}/bin/libstdc++-6.dll
+            ${MINGW_PATH}/bin/libwinpthread-1.dll
             $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
 endmacro()

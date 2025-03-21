@@ -67,7 +67,7 @@ void ServerWindow::componentsInitStates()
     ui->pushButtonStopPlayer->setEnabled(false);
     ui->pushButtonRestartPlayer->setEnabled(false);
 
-    ui->lineEditIP->setText("127.0.0.1");
+    ui->lineEditIP->setText("192.168.100.101");
     ui->lineEditPort->setText("8080");
 
     this->setFixedSize(765, 700);

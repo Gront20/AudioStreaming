@@ -51,7 +51,7 @@ void ClientWindow::componentsInitStates()
     ui->pushButtonStartPlayer->setEnabled(true);
     ui->pushButtonStopPlayer->setEnabled(false);
 
-    ui->lineEditIP->setText("127.0.0.1");
+    ui->lineEditIP->setText("192.168.100.101");
     ui->lineEditPort->setText("8080");
 }
 
@@ -104,7 +104,7 @@ void ClientWindow::stopAudio()
     emit audioPlayerChangeState(AUDIO::HANDLER::MODE::STOP);
 }
 
-void ClientWindow::recieveAudioSamples(const std::vector<float> &samples)
+void ClientWindow::recieveAudioSamples(const QVector<float> &samples, const int &frameSize)
 {
     series = new QLineSeries();
     const int maxPoints = 1000;

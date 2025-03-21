@@ -51,9 +51,9 @@ void AudioHandler::audioPlayerChangeState(AUDIO::HANDLER::MODE mode)
     }
 }
 
-void AudioHandler::sendAudioSamples(const std::vector<float> &samples)
+void AudioHandler::sendAudioSamples(const QVector<float> &samples)
 {
-    emit sendAudioSamplesFromCore(samples);
+    emit sendAudioSamplesFromCore(samples, 0);
 }
 
 void AudioHandler::changeAudioStatus(AUDIO::HANDLER::STATUS status)

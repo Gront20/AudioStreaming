@@ -1,9 +1,0 @@
-C:/portaudio/build/CMakeFiles/portaudio.dir
-C:/portaudio/build/CMakeFiles/portaudio_static.dir
-C:/portaudio/build/CMakeFiles/uninstall.dir
-C:/portaudio/build/CMakeFiles/edit_cache.dir
-C:/portaudio/build/CMakeFiles/rebuild_cache.dir
-C:/portaudio/build/CMakeFiles/list_install_components.dir
-C:/portaudio/build/CMakeFiles/install.dir
-C:/portaudio/build/CMakeFiles/install/local.dir
-C:/portaudio/build/CMakeFiles/install/strip.dir
