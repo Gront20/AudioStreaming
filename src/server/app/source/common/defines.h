@@ -8,6 +8,8 @@
 #define IP_DEFAULT QHostAddress::LocalHost
 #define PORT_DEFAULT 8080
 
+#define DEFAULT_VOLUME 100
+
 namespace APPCORE {
 
 enum class INITILIZE : int {

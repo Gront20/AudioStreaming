@@ -6,14 +6,14 @@ AudioCore::AudioCore(QObject* parent)
 
     PaError err = Pa_Initialize();
     if (err != paNoError) {
-        qWarning() << "PortAudio init failed:" << Pa_GetErrorText(err);
+        emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::PA_INIT);
         return;
     }
 
     PaStreamParameters outputParams;
     outputParams.device = Pa_GetDefaultOutputDevice();
     if (outputParams.device == paNoDevice) {
-        qWarning() << "No default audio output device!";
+        emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::DEVICE_ERROR);
         return;
     }
 
@@ -24,7 +24,7 @@ AudioCore::AudioCore(QObject* parent)
 
     err = Pa_OpenStream(&stream, nullptr, &outputParams, m_sampleRate, paFramesPerBufferUnspecified, paClipOff, nullptr, nullptr);
     if (err != paNoError) {
-        qWarning() << "Failed to open PortAudio stream:" << Pa_GetErrorText(err);
+        emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::STREAM_ERROR);
         return;
     }
 }
@@ -46,43 +46,49 @@ bool AudioCore::init(int sampleRate, int channels) {
                                       av_get_default_channel_layout(channels), AV_SAMPLE_FMT_S16, sampleRate,
                                       0, nullptr);
     if (!m_swrContext || swr_init(m_swrContext) < 0) {
-        qWarning() << "Failed to initialize resampler";
+        emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::SWRESAMPLE_ERROR);
         return false;
     }
     return true;
 }
 
 void AudioCore::playAudio(const QVector<float>& samples, int frameSize) {
+
+    if (!m_isPlaying) return;
+
     if (samples.isEmpty()) {
-        qWarning() << "Received empty audio data!";
+        emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::BUFFER_EMPTY);
         return;
     }
 
     if (!stream) {
-        qWarning() << "PortAudio stream is not initialized!";
+        emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::STREAM_ERROR);
         return;
     }
 
     int numFrames = samples.size() / m_channels;
 
+
     PaError err = Pa_WriteStream(stream, samples.data(), numFrames);
     if (err != paNoError) {
-        qWarning() << "PortAudio error:" << Pa_GetErrorText(err);
+        emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::PA_ERROR);
     }
+
+    emit sendAudioSamples(samples);
 }
 
 
 void AudioCore::start() {
     PaError err = Pa_Initialize();
     if (err != paNoError) {
-        qWarning() << "PortAudio init failed:" << Pa_GetErrorText(err);
+        emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::PA_INIT);
         return;
     }
 
     PaStreamParameters outputParams;
     outputParams.device = Pa_GetDefaultOutputDevice();
     if (outputParams.device == paNoDevice) {
-        qWarning() << "No default audio output device!";
+        emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::DEVICE_ERROR);
         Pa_Terminate();
         return;
     }
@@ -94,14 +100,14 @@ void AudioCore::start() {
 
     err = Pa_OpenStream(&stream, nullptr, &outputParams, m_sampleRate, paFramesPerBufferUnspecified, paClipOff, nullptr, nullptr);
     if (err != paNoError) {
-        qWarning() << "Failed to open PortAudio stream:" << Pa_GetErrorText(err);
+        emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::STREAM_ERROR);
         Pa_Terminate();
         return;
     }
 
     err = Pa_StartStream(stream);
     if (err != paNoError) {
-        qWarning() << "Failed to start PortAudio stream:" << Pa_GetErrorText(err);
+        emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::STREAM_ERROR);
         Pa_CloseStream(stream);
         Pa_Terminate();
         stream = nullptr;
@@ -109,19 +115,22 @@ void AudioCore::start() {
     }
 
     m_isPlaying = true;
-    qDebug() << "Audio playback started";
+    emit sendAudioStatus(AUDIO::CORE::STATUS::START);
 }
 
 void AudioCore::stop() {
+
+    emit sendAudioStatus(AUDIO::CORE::STATUS::STOP);
+
     if (stream) {
         PaError err = Pa_StopStream(stream);
         if (err != paNoError) {
-            qWarning() << "Failed to stop PortAudio stream:" << Pa_GetErrorText(err);
+            emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::STREAM_ERROR);
         }
 
         err = Pa_CloseStream(stream);
         if (err != paNoError) {
-            qWarning() << "Failed to close PortAudio stream:" << Pa_GetErrorText(err);
+            emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::STREAM_ERROR);
         }
 
         stream = nullptr;
@@ -135,5 +144,4 @@ void AudioCore::stop() {
     }
 
     m_isPlaying = false;
-    qDebug() << "Audio playback stopped";
 }

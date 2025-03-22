@@ -4,37 +4,41 @@
 #include <QUdpSocket>
 #include <QDebug>
 #include <QThread>
+#include <QVariant>
 #include <QMutex>
 #include <opus.h>
 #include "AudioCore.h"
+#include "defines.h"
 
 class NetworkCore : public QObject {
     Q_OBJECT
 public:
-    explicit NetworkCore(QObject* parent = nullptr);
+    explicit NetworkCore(QObject* parent = nullptr, quint32 sampleRate = DEFAULT_SAMPLERATE,
+                         quint8 channels = DEFAULT_CHANNELS);
     ~NetworkCore();
 
     void setDestination(const QHostAddress& address, const quint16 &port);
     bool initOpus(int sampleRate, int channels);
     void startListening();
+    void closeConnection();
 
 private slots:
     void processPendingDatagrams();
-    void handleSocketError(QAbstractSocket::SocketError error);
 
 signals:
 
     void sendAudioData(const QVector<float> &decodedSamples, const int &frameSize);
+    void sendSocketStatus(const QVariant data);
 
 private:
     QUdpSocket      *m_udpSocket;
     QThread         m_networkThread;
     OpusDecoder     *m_opusDecoder;
     QMutex          m_mutex;
-    QHostAddress    m_listenAddress;
-    quint16         m_listenPort;
-    int             m_sampleRate;
-    int             m_channels;
+    QHostAddress    m_clientAddress;
+    quint16         m_clientPort;
+    quint32         m_sampleRate;
+    quint8          m_channels;
 };
 
 

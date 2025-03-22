@@ -27,6 +27,7 @@ private:
     void initializeAudioHandler();
     void initializeNetworkHandler();
     void handleInitializationProccess(const QString &message, const QString &senderName);
+    void sendHelloMessage();
 
 // Main objects
 private:
@@ -44,7 +45,7 @@ private:
 
 signals:
 
-    void sendMessageInitialization(const QString &message);
+    void sendMessage(const QString &message);
 
 public slots:
 

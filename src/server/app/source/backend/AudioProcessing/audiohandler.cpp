@@ -56,6 +56,11 @@ void AudioHandler::receiveAudioFilePath(const QString& path)
     changeAudioStatus(AUDIO::HANDLER::STATUS::ISREADY);
 }
 
+void AudioHandler::setVolumeValue(const float &value)
+{
+    m_audioCoreObject.setVolumeValue(value);
+}
+
 void AudioHandler::sendAudioSamples(const QVector<float> &samples)
 {
     emit sendAudioSamplesFromCore(samples);
@@ -96,8 +101,5 @@ void AudioHandler::checkFileTimerConnection()
 
 void AudioHandler::checkFilePresence()
 {
-    if (!QFile::exists(m_filePath)) {
-//        m_audioCoreObject.stop();
-        // emit sendAudioStatus();
-    }
+
 }

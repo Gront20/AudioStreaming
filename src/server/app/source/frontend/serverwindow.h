@@ -12,8 +12,14 @@
 #include <QDateTime>
 #include <QTimer>
 #include <QWidget>
+#include <QStyle>
+
+
 #include <QtCharts/QChart>
 #include <QtCharts/QSplineSeries>
+#include <QtCharts/QBarSeries>
+#include <QtCharts/QBarCategoryAxis>
+#include <QtCharts/QBarSet>
 #include <QtCharts/QChartView>
 #include <QtCharts/QValueAxis>
 
@@ -40,6 +46,10 @@ private:
 
     void componentsConnections();
     void componentsInitStates();
+    void componentsSetStyles();
+    void setupAudioChart();
+    void setupNetworkChart();
+
     HANDLERTYPE getHandlerType(QObject *sender);
 
 public slots:
@@ -60,6 +70,7 @@ private slots:
     void clearLog();
     void handleConnectionInputs();
     void updateNetworkGraph();
+    void setVolumeValue(int value);
 
 // Signals
 
@@ -71,30 +82,38 @@ signals:
     void audioPlayerChangeState(AUDIO::HANDLER::MODE mode);
     void openConnectionNetwork(const QHostAddress &ip, const quint16 port);
     void closeConnectionNetwork();
-
-private:
-    // logger lines
-    QStringList         logLines;
-
-    QChart              *m_chartAudioSamples{nullptr};
-    QChartView          *m_chartAudioSamplesView{nullptr};
-    QLineSeries         *m_seriesAudioSamples{nullptr};
-
-    QChart              *m_chartNetworkData{nullptr};
-    QSplineSeries       *m_seriesNetworkData{nullptr};
-    QValueAxis          *m_axisXNetworkData{nullptr};
-    QValueAxis          *m_axisYNetworkData{nullptr};
-    QElapsedTimer       m_updateElapsedTimerNetworkData;
-    QTimer              m_updateTimerNetworkData;
-    qint64              m_startTime{10};
-
-    QVector<QPointF>    m_dataNetworkData;
-    qreal               m_timeNetworkData{0};
-    quint16             m_lastPacketSize{0};
-    bool                m_packetReceived{false};
-
+    void setVolumeValueToAudio(const float &value);
 
 private:
     Ui::ServerWindow *ui;
+
+    QString             m_widgetStyle{""};
+    QString             m_labelStyle{""};
+    QString             m_lineEditStyle{""};
+    QString             m_textBrowserStyle{""};
+
+    // logger lines
+    QStringList         m_logLines;
+
+// Audio chart
+private:
+
+    QChart              *m_chartAudioSamples{nullptr};
+    QChartView          *m_chartViewAudioSamples{nullptr};
+    QLineSeries         *m_seriesAudioSamples{nullptr};
+
+
+// Network chart
+private:
+
+    QChart              *m_chartNetworkData{nullptr};
+    QBarSeries          *m_seriesNetworkData{nullptr};
+    QBarCategoryAxis    *m_axisXNetworkData{nullptr};
+    QValueAxis          *m_axisYNetworkData{nullptr};
+    QTimer              m_updateTimerNetworkData;
+
+    QVector<QPointF>    m_dataNetworkData;
+    QVector<int>        m_packetDataBuffer;
+
 };
 #endif // CLIENTWINDOW_H

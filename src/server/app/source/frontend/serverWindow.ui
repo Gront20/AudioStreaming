@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>768</width>
-    <height>676</height>
+    <width>764</width>
+    <height>677</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -43,7 +43,7 @@
       <number>0</number>
      </property>
      <item>
-      <layout class="QFormLayout" name="formLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_5">
        <property name="leftMargin">
         <number>6</number>
        </property>
@@ -54,35 +54,77 @@
         <number>6</number>
        </property>
        <property name="bottomMargin">
-        <number>6</number>
+        <number>0</number>
        </property>
-       <item row="0" column="0">
-        <widget class="QLabel" name="labelPath">
+       <item>
+        <widget class="QLabel" name="labelAudioFileSelectioInfo">
          <property name="text">
-          <string>Path:</string>
+          <string>Audio file selection</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-         <item>
-          <widget class="QLineEdit" name="lineEditPathSelectedInfo"/>
+       <item>
+        <layout class="QFormLayout" name="formLayout">
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="labelPath">
+           <property name="text">
+            <string>Path:</string>
+           </property>
+          </widget>
          </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,100">
+         <item row="0" column="1">
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <property name="spacing">
+            <number>0</number>
+           </property>
            <item>
-            <widget class="QPushButton" name="pushButtonSelectAudioFile">
-             <property name="text">
-              <string>Select</string>
+            <widget class="QLineEdit" name="lineEditPathSelectedInfo">
+             <property name="toolTip">
+              <string>Absolute path to your audio file</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="labelSelectAudioFileInfo">
-             <property name="text">
-              <string>select audio file</string>
+            <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,100">
+             <property name="spacing">
+              <number>6</number>
              </property>
-            </widget>
+             <item>
+              <widget class="QPushButton" name="pushButtonSelectAudioFile">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>15</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Select your audio file</string>
+               </property>
+               <property name="text">
+                <string>Open</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelSelectAudioFileInfo">
+               <property name="text">
+                <string>Select audio file.</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </item>
@@ -128,104 +170,61 @@
       </widget>
      </item>
      <item>
-      <widget class="QPlainTextEdit" name="textEditFileInfo">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="verticalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOn</enum>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-       <property name="centerOnScroll">
-        <bool>false</bool>
-       </property>
-      </widget>
+      <widget class="QTextBrowser" name="textBrowserFileInfo"/>
      </item>
     </layout>
    </widget>
    <widget class="QWidget" name="widgetConnector" native="true">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>120</x>
       <y>180</y>
       <width>211</width>
       <height>101</height>
      </rect>
     </property>
-    <widget class="QLineEdit" name="lineEditIP">
-     <property name="geometry">
-      <rect>
-       <x>70</x>
-       <y>10</y>
-       <width>113</width>
-       <height>24</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="lineEditPort">
-     <property name="geometry">
-      <rect>
-       <x>70</x>
-       <y>40</y>
-       <width>113</width>
-       <height>24</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButtonOpenConnection">
-     <property name="geometry">
-      <rect>
-       <x>140</x>
-       <y>70</y>
-       <width>50</width>
-       <height>24</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Open</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labelIP">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>10</y>
-       <width>49</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>IPv4:</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labelPort">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>40</y>
-       <width>49</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Port:</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButtonCloseConnection">
-     <property name="geometry">
-      <rect>
-       <x>60</x>
-       <y>70</y>
-       <width>51</width>
-       <height>24</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Close</string>
-     </property>
-    </widget>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="1" column="2" colspan="2">
+      <widget class="QLineEdit" name="lineEditPort"/>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QLabel" name="labelPort">
+       <property name="text">
+        <string>Port:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="3">
+      <widget class="QPushButton" name="pushButtonOpenConnection">
+       <property name="toolTip">
+        <string>Open socket connection</string>
+       </property>
+       <property name="text">
+        <string>Open</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <widget class="QLabel" name="labelIP">
+       <property name="text">
+        <string>IPv4:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1" colspan="2">
+      <widget class="QPushButton" name="pushButtonCloseConnection">
+       <property name="toolTip">
+        <string>Close socket connetiion</string>
+       </property>
+       <property name="text">
+        <string>Close</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2" colspan="2">
+      <widget class="QLineEdit" name="lineEditIP"/>
+     </item>
+    </layout>
    </widget>
    <widget class="QWidget" name="widgetAppLogger" native="true">
     <property name="geometry">
@@ -238,7 +237,7 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <property name="spacing">
-      <number>6</number>
+      <number>1</number>
      </property>
      <property name="leftMargin">
       <number>6</number>
@@ -263,18 +262,33 @@
       </widget>
      </item>
      <item>
-      <widget class="QWidget" name="widget" native="true">
+      <widget class="QWidget" name="widgetLoggerSettings" native="true">
        <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <property name="spacing">
+         <number>1</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>1</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>1</number>
+        </property>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <property name="spacing">
            <number>0</number>
           </property>
           <property name="leftMargin">
-           <number>200</number>
+           <number>275</number>
           </property>
           <item>
-           <widget class="QLabel" name="label">
+           <widget class="QLabel" name="labelCapacityLogger">
             <property name="maximumSize">
              <size>
               <width>50</width>
@@ -306,6 +320,9 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>Capacity of app logger</string>
+            </property>
            </widget>
           </item>
           <item>
@@ -316,25 +333,6 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="minimumSize">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButtonLoggerDownload">
             <property name="minimumSize">
              <size>
               <width>20</width>
@@ -374,31 +372,40 @@
     <widget class="QWidget" name="widgetMediaPlayerControls" native="true">
      <property name="geometry">
       <rect>
-       <x>80</x>
+       <x>290</x>
        <y>300</y>
-       <width>270</width>
-       <height>42</height>
+       <width>131</width>
+       <height>51</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
        <widget class="QPushButton" name="pushButtonStopPlayer">
+        <property name="toolTip">
+         <string>Stop audio file</string>
+        </property>
         <property name="text">
-         <string>Stop</string>
+         <string/>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="pushButtonStartPlayer">
+        <property name="toolTip">
+         <string>Play audio file</string>
+        </property>
         <property name="text">
-         <string>Start</string>
+         <string/>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="pushButtonRestartPlayer">
+        <property name="toolTip">
+         <string>Restart audio file</string>
+        </property>
         <property name="text">
-         <string>Restart</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -409,10 +416,115 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>411</width>
-       <height>301</height>
+       <width>421</width>
+       <height>291</height>
       </rect>
      </property>
+    </widget>
+    <widget class="QWidget" name="widgetVolume" native="true">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>300</y>
+       <width>151</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_6" stretch="0">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>2</number>
+      </property>
+      <property name="topMargin">
+       <number>2</number>
+      </property>
+      <property name="rightMargin">
+       <number>2</number>
+      </property>
+      <property name="bottomMargin">
+       <number>2</number>
+      </property>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,10">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="labelVolumeMainInfo">
+          <property name="text">
+           <string>Volume</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="spacing">
+           <number>6</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="pushButtonVolume">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="CustomSlider" name="sliderVolume">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="pageStep">
+             <number>100</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksBelow</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelVolumeValue">
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
     </widget>
    </widget>
    <widget class="QWidget" name="widgetBroadcast" native="true">
@@ -424,6 +536,93 @@
       <height>171</height>
      </rect>
     </property>
+    <property name="layoutDirection">
+     <enum>Qt::RightToLeft</enum>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QWidget" name="widgetPacketSize" native="true">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>180</y>
+      <width>111</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <widget class="QLabel" name="labelPacketSizeInfo">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>10</y>
+       <width>111</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Packet Size, [bytes]</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEditPacketSize">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>91</width>
+       <height>24</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelCurrentPacketSizeInfo">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>91</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Current size:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelPacketSizeUnitInfo">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>80</y>
+       <width>31</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>bytes</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelCurrentPacketSize">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>49</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -431,7 +630,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>768</width>
+     <width>764</width>
      <height>21</height>
     </rect>
    </property>
@@ -456,6 +655,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomSlider</class>
+   <extends>QSlider</extends>
+   <header location="global">customslider.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

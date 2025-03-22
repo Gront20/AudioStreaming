@@ -30,7 +30,8 @@ public:
     ~AudioCore();
 
     bool loadFile(const std::string& filename);
-    void changeFile(const std::string& newFilePath);\
+    void changeFile(const std::string& newFilePath);
+    void setVolumeValue(const float &value);
 
     void play();
     void stop();
@@ -54,6 +55,8 @@ private:
     size_t bufferIndex = 0;
 
     QString m_fileName{};
+
+    float             m_volumeValue{1.f};
 
     std::atomic<bool> isPlaying{false};
     std::atomic<bool> isPaused{false};

@@ -13,6 +13,11 @@ AudioCore::~AudioCore()
     Pa_Terminate();
 }
 
+void AudioCore::setVolumeValue(const float& value)
+{
+    this->m_volumeValue = qBound(0.0f, value, 1.0f);
+}
+
 void AudioCore::changeFile(const std::string &newFilePath)
 {
     bool wasPlaying = isPlaying;
@@ -239,9 +244,16 @@ int AudioCore::paCallback(const void *inputBuffer, void *outputBuffer,
     size_t samplesToCopy = framesPerBuffer * CHANNELS;
     size_t remainingSamples = player->audioBuffer.size() - player->bufferIndex;
 
-    QVector<float> audioChunk(out, out + samplesToCopy);
+    QVector<float> audioChunk(samplesToCopy);
+    memcpy(audioChunk.data(), &player->audioBuffer[player->bufferIndex], samplesToCopy * sizeof(float));
+
+    // Отправляем чанки БЕЗ изменения громкости
     emit player->sendAudioSamples(audioChunk);
 
+    // Применяем громкость только к выходному буферу
+    for (unsigned i = 0; i < samplesToCopy; ++i) {
+        out[i] = audioChunk[i] * player->m_volumeValue;
+    }
     if (remainingSamples < samplesToCopy) {
         player->sendAudioStatus(player->m_fileName, AUDIO::CORE::STATUS::END);
         memset(out, 0, samplesToCopy * sizeof(float));
@@ -251,7 +263,7 @@ int AudioCore::paCallback(const void *inputBuffer, void *outputBuffer,
         return paComplete;
     }
 
-    memcpy(out, &player->audioBuffer[player->bufferIndex], samplesToCopy * sizeof(float));
+    // memcpy(out, &player->audioBuffer[player->bufferIndex], samplesToCopy * sizeof(float));
     player->bufferIndex += samplesToCopy;
 
     return paContinue;

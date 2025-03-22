@@ -5,6 +5,7 @@
 BaseAppCore::BaseAppCore(QObject *parent) : QObject(parent)
 {
     objectsInit();
+    sendHelloMessage();
 }
 
 
@@ -26,7 +27,7 @@ void BaseAppCore::initializeMainWindow()
     m_mainWindowObject = new ServerWindow(nullptr);
     m_mainWindowObject->setObjectName("MainWindow");
 
-    connect(this, &BaseAppCore::sendMessageInitialization, m_mainWindowObject, &ServerWindow::recieveMessage);
+    connect(this, &BaseAppCore::sendMessage, m_mainWindowObject, &ServerWindow::recieveMessage);
 
     handleInitializationProccess("Initialization successful!", m_mainWindowObject->objectName());
 }
@@ -95,6 +96,8 @@ void BaseAppCore::initializeAudioHandler()
                 m_mainWindowObject, &ServerWindow::handleAudioStatusUpdate);
         connect(m_audioHandlerObject, &AudioHandler::sendAudioSamplesFromCore,
                 m_mainWindowObject, &ServerWindow::recieveAudioSamples);
+        connect(m_mainWindowObject, &ServerWindow::setVolumeValueToAudio,
+                m_audioHandlerObject, &AudioHandler::setVolumeValue);
 
 
         m_appServerAudioHandlerThread.start();
@@ -112,9 +115,14 @@ void BaseAppCore::initializeAudioHandler()
     }
 }
 
+void BaseAppCore::sendHelloMessage()
+{
+    emit sendMessage("Select your audio file!");
+}
+
 void BaseAppCore::handleInitializationProccess(const QString &message, const QString &senderName)
 {
-    emit sendMessageInitialization(senderName + ": " + message);
+    emit sendMessage(senderName + ": " + message);
 }
 
 BaseAppCore::~BaseAppCore()

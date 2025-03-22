@@ -21,6 +21,7 @@ public slots:
     void receiveAudioFilePath(const QString& path);
     void audioPlayerChangeState(AUDIO::HANDLER::MODE mode);
     void sendAudioSamples(const QVector<float> &samples);
+    void setVolumeValue(const float &value);
 
     void startAudio();
     void stopAudio();

@@ -43,7 +43,6 @@ void NetworkCore::closeConnection()
         return;
     }
 
-    QMutexLocker locker(&m_mutex);
     m_udpSocket->close();
     m_udpSocket->abort();
 
@@ -56,14 +55,13 @@ void NetworkCore::closeConnection()
 
 void NetworkCore::setDestination(const QHostAddress &address, quint16 port)
 {
-    // if (QThread::currentThread() != m_udpSocket->thread()) {
-    //     QMetaObject::invokeMethod(m_udpSocket, [this, address, port]() {
-    //         setDestination(address, port);
-    //     }, Qt::QueuedConnection);
-    //     return;
-    // }
+    if (QThread::currentThread() != m_udpSocket->thread()) {
+        QMetaObject::invokeMethod(m_udpSocket, [this, address, port]() {
+            setDestination(address, port);
+        }, Qt::QueuedConnection);
+        return;
+    }
 
-    QMutexLocker locker(&m_mutex);
     m_clientAddress = address;
     m_clientPort = port;
     m_isMulticast = true;
@@ -105,7 +103,6 @@ void NetworkCore::startStreaming()
 
 void NetworkCore::stopStreaming()
 {
-    // QMutexLocker locker(&m_mutex);
     m_isStreamingFlag = false;
 }
 

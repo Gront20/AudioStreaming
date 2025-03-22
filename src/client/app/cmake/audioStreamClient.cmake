@@ -35,6 +35,9 @@ add_source(main)
 add_class(baseAppCore)
 src_end() # App-gui end
 
+# Frontend
+# ====================================================================
+
 # GUI
 src_begin(../source/frontend "App") # App-gui start
 add_gui_class(clientwindow)

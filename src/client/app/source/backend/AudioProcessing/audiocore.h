@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVector>
+#include "defines.h"
 
 extern "C"{
     #include <libavcodec/avcodec.h>
@@ -21,6 +22,12 @@ public:
     void playAudio(const QVector<float>& samples, int frameSize);
     void start();
     void stop();
+
+signals:
+
+    void sendCurrentStateError(const AUDIO::CORE::ERROR_HANDLER &errorCode);
+    void sendAudioStatus(const AUDIO::CORE::STATUS &statusCode);
+    void sendAudioSamples(const QVector<float> &samples);
 
 private:
     AVFormatContext* m_formatContext;
