@@ -28,6 +28,8 @@ public slots:
     void handleNetworkConnectionOpen(const QHostAddress &ip, const quint16 port);
     void handleNetworkConnectionClose();
 
+    void setPacketSize(const quint16 packetSize);
+
 private:
 
     NetworkCore m_networkCoreObject;

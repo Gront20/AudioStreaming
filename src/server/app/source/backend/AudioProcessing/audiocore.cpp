@@ -87,11 +87,11 @@ bool AudioCore::loadFile(const std::string &filename)
 
     AVChannelLayout in_ch_layout, out_ch_layout;
     av_channel_layout_default(&in_ch_layout, codec_ctx->ch_layout.nb_channels);
-    av_channel_layout_default(&out_ch_layout, CHANNELS);
+    av_channel_layout_default(&out_ch_layout, DEFAULT_CHANNELS);
 
     swr_alloc_set_opts2(
         &swr_ctx,
-        &out_ch_layout, AV_SAMPLE_FMT_FLT, SAMPLE_RATE,
+        &out_ch_layout, AV_SAMPLE_FMT_FLT, DEFAULT_SAMPLERATE,
         &in_ch_layout, codec_ctx->sample_fmt, codec_ctx->sample_rate,
         0, nullptr
     );
@@ -116,15 +116,15 @@ bool AudioCore::loadFile(const std::string &filename)
                     int out_linesize;
                     int out_samples = av_rescale_rnd(
                                           swr_get_delay(swr_ctx, codec_ctx->sample_rate) + frame->nb_samples,
-                                          SAMPLE_RATE, codec_ctx->sample_rate, AV_ROUND_UP
+                                          DEFAULT_SAMPLERATE, codec_ctx->sample_rate, AV_ROUND_UP
                                       );
 
-                    av_samples_alloc(out_buf, &out_linesize, CHANNELS, out_samples, AV_SAMPLE_FMT_FLT, 0);
+                    av_samples_alloc(out_buf, &out_linesize, DEFAULT_CHANNELS, out_samples, AV_SAMPLE_FMT_FLT, 0);
 
                     int converted = swr_convert(swr_ctx, out_buf, out_samples,
                                                 (const uint8_t **)frame->data, frame->nb_samples);
                     if (converted > 0) {
-                        size_t sampleCount = converted * CHANNELS;
+                        size_t sampleCount = converted * DEFAULT_CHANNELS;
                         std::vector<float> tempBuffer(sampleCount);
                         memcpy(tempBuffer.data(), out_buf[0], sampleCount * sizeof(float));
                         audioBuffer.insert(audioBuffer.end(), tempBuffer.begin(), tempBuffer.end());
@@ -167,7 +167,7 @@ void AudioCore::play()
     isPaused = false;
 
     if (!stream) {
-        Pa_OpenDefaultStream(&stream, 0, 2, paFloat32, SAMPLE_RATE, FRAMES_PER_BUFFER, paCallback, this);
+        Pa_OpenDefaultStream(&stream, 0, 2, paFloat32, DEFAULT_SAMPLERATE, DEFAULT_FRAMES_PER_BUFFER, paCallback, this);
     }
 
     if (Pa_IsStreamStopped(stream) == 1) {
@@ -212,7 +212,7 @@ void AudioCore::restart()
         stream = nullptr;
     }
 
-    Pa_OpenDefaultStream(&stream, 0, 2, paFloat32, SAMPLE_RATE, FRAMES_PER_BUFFER, paCallback, this);
+    Pa_OpenDefaultStream(&stream, 0, 2, paFloat32, DEFAULT_SAMPLERATE, DEFAULT_FRAMES_PER_BUFFER, paCallback, this);
     Pa_StartStream(stream);
 
     cv.notify_all();
@@ -228,29 +228,27 @@ int AudioCore::paCallback(const void *inputBuffer, void *outputBuffer,
     QMutexLocker locker(&player->mtx);
 
     if (player->isPaused || player->isFinished) {
-        memset(out, 0, framesPerBuffer * CHANNELS * sizeof(float));
+        memset(out, 0, framesPerBuffer * DEFAULT_CHANNELS * sizeof(float));
         return paContinue;
     }
 
     if (!player->isPlaying || player->bufferIndex >= player->audioBuffer.size()) {
         player->sendAudioStatus(player->m_fileName, AUDIO::CORE::STATUS::END);
-        memset(out, 0, framesPerBuffer * CHANNELS * sizeof(float));
+        memset(out, 0, framesPerBuffer * DEFAULT_CHANNELS * sizeof(float));
         player->isPlaying = false;
         player->isFinished = true;
         Pa_StopStream(player->stream);
         return paComplete;
     }
 
-    size_t samplesToCopy = framesPerBuffer * CHANNELS;
+    size_t samplesToCopy = framesPerBuffer * DEFAULT_CHANNELS;
     size_t remainingSamples = player->audioBuffer.size() - player->bufferIndex;
 
     QVector<float> audioChunk(samplesToCopy);
     memcpy(audioChunk.data(), &player->audioBuffer[player->bufferIndex], samplesToCopy * sizeof(float));
 
-    // Отправляем чанки БЕЗ изменения громкости
     emit player->sendAudioSamples(audioChunk);
 
-    // Применяем громкость только к выходному буферу
     for (unsigned i = 0; i < samplesToCopy; ++i) {
         out[i] = audioChunk[i] * player->m_volumeValue;
     }

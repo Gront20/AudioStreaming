@@ -5,10 +5,17 @@
 #include <QMetaType>
 
 
-#define IP_DEFAULT QHostAddress::LocalHost
-#define PORT_DEFAULT 8080
+#define DEFAULT_IP QHostAddress::LocalHost
+#define DEFAULT_PORT 8080
 
-#define DEFAULT_VOLUME 100
+#define DEFAULT_CHANNELS 2
+#define DEFAULT_SAMPLERATE 48000
+#define DEFAULT_BITRATE 128000
+#define DEFAULT_FRAMES_PER_BUFFER 960
+#define DEFAULT_ID 123456
+#define DEFAULT_PACKETSIZE 200
+
+#define DEFAULT_VOLUME 50
 
 namespace APPCORE {
 

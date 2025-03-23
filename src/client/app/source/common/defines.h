@@ -9,6 +9,7 @@
 // for codec default parameters
 #define DEFAULT_SAMPLERATE 48000
 #define DEFAULT_CHANNELS 2
+#define DEFAULT_BITRATE 128000
 
 namespace APPCORE{
 

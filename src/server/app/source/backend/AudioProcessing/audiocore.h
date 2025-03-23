@@ -17,10 +17,6 @@ extern "C" {
     #include <portaudio.h>
 }
 
-#define SAMPLE_RATE 48000
-#define CHANNELS 2
-#define FRAMES_PER_BUFFER 960
-
 class AudioCore : public QObject {
 
     Q_OBJECT

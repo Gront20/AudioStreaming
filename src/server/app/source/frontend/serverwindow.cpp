@@ -70,10 +70,13 @@ void ServerWindow::componentsSetStyles()
     ui->labelFileInfo->setObjectName("mainTitleLabel");
     ui->labelAudioFileSelectioInfo->setObjectName("mainTitleLabel");
     ui->labelVolumeMainInfo->setObjectName("mainTitleLabel");
+    ui->labelMediaPlayerControls->setObjectName("mainTitleLabel");
     ui->labelAppLogger->setFont(QFont("Arial", 10, QFont::Bold));
     ui->labelFileInfo->setFont(QFont("Arial", 10, QFont::Bold));
     ui->labelAudioFileSelectioInfo->setFont(QFont("Arial", 10, QFont::Bold));
     ui->labelVolumeMainInfo->setFont(QFont("Arial", 10, QFont::Bold));
+    ui->labelMediaPlayerControls->setFont(QFont("Arial", 10, QFont::Bold));
+
 
     ui->labelIP->setObjectName("titleLabel");
     ui->labelPort->setObjectName("titleLabel");
@@ -100,6 +103,7 @@ void ServerWindow::componentsSetStyles()
     ui->labelPacketSizeUnitInfo->setStyleSheet(m_labelStyle);
     ui->labelVolumeValue->setStyleSheet(m_labelStyle);
     ui->labelVolumeMainInfo->setStyleSheet(m_labelStyle);
+    ui->labelMediaPlayerControls->setStyleSheet(m_labelStyle);
 
     ui->lineEditIP->setObjectName("lineEdit");
     ui->lineEditPort->setObjectName("lineEdit");
@@ -231,14 +235,18 @@ void ServerWindow::componentsInitStates()
     ui->lineEditPathSelectedInfo->setReadOnly(true);
     ui->lineEditPathSelectedInfo->clear();
 
+    QIcon iconPlay = QApplication::style()->standardIcon(QStyle::SP_MediaPlay);
+    QIcon iconStop = QApplication::style()->standardIcon(QStyle::SP_MediaStop);
+    QIcon iconRestart = QApplication::style()->standardIcon(QStyle::SP_BrowserReload);
+
     ui->pushButtonStartPlayer->setIconSize(QSize(16, 16));
-    ui->pushButtonStartPlayer->setIcon(QIcon(":/GUI/images/playButton.png"));
+    ui->pushButtonStartPlayer->setIcon(QIcon(iconPlay));
 
     ui->pushButtonRestartPlayer->setIconSize(QSize(16, 16));
-    ui->pushButtonRestartPlayer->setIcon(QIcon(":/GUI/images/restartButton.png"));
+    ui->pushButtonRestartPlayer->setIcon(QIcon(iconRestart));
 
     ui->pushButtonStopPlayer->setIconSize(QSize(16, 16));
-    ui->pushButtonStopPlayer->setIcon(QIcon(":/GUI/images/stopButton.png"));
+    ui->pushButtonStopPlayer->setIcon(QIcon(iconStop));
 
     ui->pushButtonLoggerClear->setIconSize(QSize(16, 16));
     ui->pushButtonLoggerClear->setIcon(QIcon(":/GUI/images/bucket.png"));
@@ -248,7 +256,10 @@ void ServerWindow::componentsInitStates()
     ui->pushButtonRestartPlayer->setEnabled(false);
 
     ui->lineEditIP->setText("192.168.100.101");
-    ui->lineEditPort->setText("8080");
+    ui->lineEditPort->setText(QString("%1").arg(DEFAULT_PORT));
+
+    ui->lineEditPacketSize->setText(QString("%1").arg(DEFAULT_PACKETSIZE));
+    setPacketSize();
 
     this->setFixedSize(765, 680);
 
@@ -259,8 +270,30 @@ void ServerWindow::componentsInitStates()
 
     ui->sliderVolume->setValue(DEFAULT_VOLUME);
     ui->labelVolumeValue->setText(QString("%1").arg(DEFAULT_VOLUME));
-
     setVolumeValue(DEFAULT_VOLUME);
+
+    setupLineEdits();
+}
+
+void ServerWindow::setupLineEdits()
+{
+    QIntValidator* validatorPort = new QIntValidator(1, 65535, this);
+    ui->lineEditPort->setValidator(validatorPort);
+
+    QIntValidator* validatorPacketSize = new QIntValidator(100, 1500, this);
+    ui->lineEditPacketSize->setValidator(validatorPacketSize);
+    connect(ui->lineEditPacketSize, &QLineEdit::textChanged, [this]() {
+        QString text = ui->lineEditPacketSize->text();
+        if (text.startsWith('0') && text.length() > 1) {
+            ui->lineEditPacketSize->setText(text.remove(QRegularExpression("^0+")));
+        }
+    });
+
+    QString ipRange = "(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?|0)";
+    QRegularExpression ipRegex("^" + ipRange + "\\." + ipRange + "\\." + ipRange + "\\." + ipRange + "$");
+    QRegularExpressionValidator* validator = new QRegularExpressionValidator(ipRegex, this);
+    ui->lineEditIP->setValidator(validator);
+
 
 }
 
@@ -296,7 +329,7 @@ void ServerWindow::updateNetworkGraph()
     for (int i = 0; i < barSet->count(); ++i) {
         maxValue = std::max(maxValue, static_cast<int>(barSet->at(i)));
     }
-    m_axisYNetworkData->setRange(0, maxValue + 50);
+    m_axisYNetworkData->setRange(0, maxValue);
     barSet->setBorderColor(Qt::black);
 
     m_seriesNetworkData->setBarWidth(1.0);
@@ -323,6 +356,8 @@ void ServerWindow::componentsConnections()
         else
             ui->sliderVolume->setValue(100);
     });
+
+    connect(ui->pushButtonSetPacketSize, &QPushButton::clicked, this, &ServerWindow::setPacketSize);
 }
 
 void ServerWindow::handleConnectionInputs()
@@ -477,6 +512,13 @@ void ServerWindow::recieveMessage(const QString &message)
             ui->textBrowserAppLogger->append(line);
         }
     }
+}
+
+void ServerWindow::setPacketSize()
+{
+    ui->labelCurrentPacketSize->setText(ui->lineEditPacketSize->text());
+    quint16 packetSize = static_cast<quint16>(ui->lineEditPacketSize->text().toInt());
+    emit sendPacketSize(packetSize);
 }
 
 void ServerWindow::clearLog()

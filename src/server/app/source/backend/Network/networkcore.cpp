@@ -1,7 +1,7 @@
 #include "NetworkCore.h"
 
 NetworkCore::NetworkCore(QObject *parent)
-    : QObject(parent), m_opusEncoder(nullptr), m_isMulticast(false), m_packetSize(4000)
+    : QObject(parent), m_opusEncoder(nullptr)
 {
 
     m_udpSocket = new QUdpSocket(this);
@@ -26,6 +26,7 @@ bool NetworkCore::initOpus(int sampleRate, int channels, int bitrate)
 {
     int error;
     m_opusEncoder = opus_encoder_create(sampleRate, channels, OPUS_APPLICATION_AUDIO, &error);
+    m_opusDecoder = opus_decoder_create(sampleRate, channels, &error);
     if (error != OPUS_OK) {
         emit sendSocketStatus(QVariant(static_cast<int>(NETWORK::CORE::STATUS::ERROR_OPUS_INIT)));
         return false;
@@ -33,6 +34,7 @@ bool NetworkCore::initOpus(int sampleRate, int channels, int bitrate)
 
     opus_encoder_ctl(m_opusEncoder, OPUS_SET_BITRATE(bitrate));
     opus_encoder_ctl(m_opusEncoder, OPUS_SET_COMPLEXITY(10));
+    opus_encoder_ctl(m_opusEncoder, OPUS_SET_VBR(1)); // можео 0 поставить если нужен CBR опционально в общем
     return true;
 }
 
@@ -53,11 +55,11 @@ void NetworkCore::closeConnection()
     emit sendSocketStatus(QVariant(static_cast<int>(NETWORK::CORE::STATUS::CLOSED)));
 }
 
-void NetworkCore::setDestination(const QHostAddress &address, quint16 port)
+void NetworkCore::setDestination(const QHostAddress &address, quint16 port, bool multicast)
 {
     if (QThread::currentThread() != m_udpSocket->thread()) {
-        QMetaObject::invokeMethod(m_udpSocket, [this, address, port]() {
-            setDestination(address, port);
+        QMetaObject::invokeMethod(m_udpSocket, [this, address, port, multicast]() {
+            setDestination(address, port, multicast);
         }, Qt::QueuedConnection);
         return;
     }
@@ -73,7 +75,10 @@ void NetworkCore::setDestination(const QHostAddress &address, quint16 port)
 
     m_udpSocket->abort();
 
-    if (!m_udpSocket->bind(m_clientAddress, m_clientPort)) {
+    m_isMulticast = multicast;
+
+    if (!m_udpSocket->bind(m_clientAddress, m_clientPort, multicast ? QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint
+                             : QUdpSocket::DefaultForPlatform)) {
         emit sendSocketStatus(QVariant(static_cast<int>(NETWORK::CORE::STATUS::FAILED_BIND)));
         return;
     } else {
@@ -81,23 +86,13 @@ void NetworkCore::setDestination(const QHostAddress &address, quint16 port)
     }
 }
 
-void NetworkCore::setPacketSize(int size)
+void NetworkCore::setPacketSize(const int size)
 {
-    m_packetSize = qBound(200, size, 4000);
-
-    if (m_packetSize < 4000) {
-        if (m_packetSize >= 120 * m_numChannels * sizeof(float)) m_frameSize = 120; // 2.5 мс
-        if (m_packetSize >= 240 * m_numChannels * sizeof(float)) m_frameSize = 240; // 5 мс
-        if (m_packetSize >= 480 * m_numChannels * sizeof(float)) m_frameSize = 480; // 10 мс
-        if (m_packetSize >= 960 * m_numChannels * sizeof(float)) m_frameSize = 960; // 20 мс
-        if (m_packetSize >= 1920 * m_numChannels * sizeof(float)) m_frameSize = 1920; // 40 мс
-        if (m_packetSize >= 2880 * m_numChannels * sizeof(float)) m_frameSize = 2880; // 60 мс
-    }
+    m_packetSize = qBound(200, size, 1500);
 }
 
 void NetworkCore::startStreaming()
 {
-    // QMutexLocker locker(&m_mutex);
     m_isStreamingFlag = true;
 }
 
@@ -109,38 +104,34 @@ void NetworkCore::stopStreaming()
 void NetworkCore::sendNextRtpPacket(const QVector<float>& samples) {
     if (!m_isStreamingFlag || !m_isMulticast) return;
 
-    m_samplesBuffer.append(samples);
+    QByteArray pcmData;
+    for (float sample : samples) {
+        int16_t pcmSample = static_cast<int16_t>(sample * 32767); // Преобразуем float в int16_t
+        pcmData.append(reinterpret_cast<const char*>(&pcmSample), sizeof(int16_t));
+    }
 
-    while (m_samplesBuffer.size() >= m_frameSize * m_numChannels) {
-        QVector<float> packetSamples = m_samplesBuffer.mid(0, m_frameSize * m_numChannels);
-        m_samplesBuffer.remove(0, m_frameSize * m_numChannels);
+    m_encodedBuffer.append(pcmData);
 
-        QByteArray opusData(m_packetSize - 12, 0);
-        int encodedBytes = opus_encode_float(m_opusEncoder, packetSamples.data(), m_frameSize,
-                                             reinterpret_cast<unsigned char*>(opusData.data()), opusData.size());
+    while (m_encodedBuffer.size() >= m_packetSize - 12) {
+        qDebug() << "Encoded buffer size:" << m_encodedBuffer.size();
 
-        if (encodedBytes <= 0) {
-            emit sendSocketStatus(QVariant(static_cast<int>(NETWORK::CORE::STATUS::ERROR_OPUS_ENCODE)));
-            continue;
-        }
-
-        QByteArray rtpPacket(12 + encodedBytes, 0);
+        QByteArray rtpPacket(m_packetSize, 0);
         uint8_t* rtpHeader = reinterpret_cast<uint8_t*>(rtpPacket.data());
 
-        rtpHeader[0] = 0x80;
-        rtpHeader[1] = 0xE0;
-        rtpHeader[2] = (m_sequenceNumber >> 8) & 0xFF;
-        rtpHeader[3] = m_sequenceNumber & 0xFF;
-        rtpHeader[4] = (m_timestamp >> 24) & 0xFF;
+        rtpHeader[0] = 0x80; // Версия RTP (2), нет дополнений, нет расширения, нет CSRC
+        rtpHeader[1] = 0xE0; // Тип полезной нагрузки (96 для PCM)
+        rtpHeader[2] = (m_sequenceNumber >> 8) & 0xFF; // Номер последовательности (старший байт)
+        rtpHeader[3] = m_sequenceNumber & 0xFF; // Номер последовательности (младший байт)
+        rtpHeader[4] = (m_timestamp >> 24) & 0xFF; // Метка времени (старший байт)
         rtpHeader[5] = (m_timestamp >> 16) & 0xFF;
         rtpHeader[6] = (m_timestamp >> 8) & 0xFF;
-        rtpHeader[7] = m_timestamp & 0xFF;
-        rtpHeader[8] = (m_ssrc >> 24) & 0xFF;
+        rtpHeader[7] = m_timestamp & 0xFF; // Метка времени (младший байт)
+        rtpHeader[8] = (m_ssrc >> 24) & 0xFF; // Идентификатор источника синхронизации (SSRC)
         rtpHeader[9] = (m_ssrc >> 16) & 0xFF;
         rtpHeader[10] = (m_ssrc >> 8) & 0xFF;
         rtpHeader[11] = m_ssrc & 0xFF;
 
-        memcpy(rtpPacket.data() + 12, opusData.data(), encodedBytes);
+        memcpy(rtpPacket.data() + 12, m_encodedBuffer.data(), m_packetSize - 12);
 
         m_udpSocket->writeDatagram(rtpPacket, m_clientAddress, m_clientPort);
 
@@ -151,5 +142,7 @@ void NetworkCore::sendNextRtpPacket(const QVector<float>& samples) {
 
         m_sequenceNumber++;
         m_timestamp += m_frameSize;
+
+        m_encodedBuffer.remove(0, m_packetSize - 12);
     }
 }

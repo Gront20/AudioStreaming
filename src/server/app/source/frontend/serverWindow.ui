@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>764</width>
-    <height>677</height>
+    <width>778</width>
+    <height>675</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -373,41 +373,92 @@
      <property name="geometry">
       <rect>
        <x>290</x>
-       <y>300</y>
+       <y>290</y>
        <width>131</width>
-       <height>51</height>
+       <height>61</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>2</number>
+      </property>
+      <property name="topMargin">
+       <number>2</number>
+      </property>
+      <property name="rightMargin">
+       <number>2</number>
+      </property>
+      <property name="bottomMargin">
+       <number>2</number>
+      </property>
       <item>
-       <widget class="QPushButton" name="pushButtonStopPlayer">
-        <property name="toolTip">
-         <string>Stop audio file</string>
+       <layout class="QVBoxLayout" name="verticalLayout_7" stretch="0,10">
+        <property name="spacing">
+         <number>0</number>
         </property>
-        <property name="text">
-         <string/>
+        <property name="sizeConstraint">
+         <enum>QLayout::SetNoConstraint</enum>
         </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButtonStartPlayer">
-        <property name="toolTip">
-         <string>Play audio file</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButtonRestartPlayer">
-        <property name="toolTip">
-         <string>Restart audio file</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
+        <item>
+         <widget class="QLabel" name="labelMediaPlayerControls">
+          <property name="text">
+           <string>Controls</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <property name="leftMargin">
+           <number>2</number>
+          </property>
+          <property name="topMargin">
+           <number>16</number>
+          </property>
+          <property name="rightMargin">
+           <number>2</number>
+          </property>
+          <property name="bottomMargin">
+           <number>2</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="pushButtonStopPlayer">
+            <property name="toolTip">
+             <string>Stop audio file</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonStartPlayer">
+            <property name="toolTip">
+             <string>Play audio file</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonRestartPlayer">
+            <property name="toolTip">
+             <string>Restart audio file</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -425,9 +476,9 @@
      <property name="geometry">
       <rect>
        <x>140</x>
-       <y>300</y>
+       <y>290</y>
        <width>151</width>
-       <height>51</height>
+       <height>61</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_6" stretch="0">
@@ -526,6 +577,16 @@
       </item>
      </layout>
     </widget>
+    <widget class="QWidget" name="widget" native="true">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>300</y>
+       <width>141</width>
+       <height>51</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="widgetBroadcast" native="true">
     <property name="geometry">
@@ -573,7 +634,7 @@
       <rect>
        <x>10</x>
        <y>30</y>
-       <width>91</width>
+       <width>41</width>
        <height>24</height>
       </rect>
      </property>
@@ -623,6 +684,19 @@
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButtonSetPacketSize">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>30</y>
+       <width>41</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Set</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -630,18 +704,10 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>764</width>
+     <width>778</width>
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuMenu">
-    <property name="title">
-     <string>Menu</string>
-    </property>
-    <addaction name="actionOptions"/>
-    <addaction name="actionExit"/>
-   </widget>
-   <addaction name="menuMenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOptions">

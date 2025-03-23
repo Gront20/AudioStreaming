@@ -19,10 +19,10 @@ public:
     explicit NetworkCore(QObject* parent = nullptr);
     ~NetworkCore();
 
-    void setDestination(const QHostAddress& address, quint16 port);
+    void setDestination(const QHostAddress& address, quint16 port, bool multicast);
     void closeConnection();
-    bool initOpus(int sampleRate = 48000, int channels = 2, int bitrate = 64000);
-    void setPacketSize(int size);
+    bool initOpus(int sampleRate = DEFAULT_SAMPLERATE, int channels = DEFAULT_CHANNELS, int bitrate = DEFAULT_BITRATE);
+    void setPacketSize(const int size);
 
 public slots:
 
@@ -37,9 +37,9 @@ signals:
 
 private:
     QUdpSocket          *m_udpSocket;
-    QHostAddress        m_clientAddress;
-    quint16             m_clientPort{0};
-    quint16             m_packetSize{200};
+    QHostAddress        m_clientAddress{DEFAULT_IP};
+    quint16             m_clientPort{DEFAULT_PORT};
+    quint16             m_packetSize{DEFAULT_PACKETSIZE};
     std::vector<float>  m_samplesData;
 
     QVector<float>      m_audioBuffer;
@@ -47,16 +47,18 @@ private:
     bool                m_isStreamingFlag{false};
     bool                m_isMulticast{false};
     QMutex              m_mutex;
-    QVector<float>      m_samplesBuffer;
+    QVector<float>      m_samplesBuffer, m_samplesBuffer1;
 
 
     OpusEncoder*        m_opusEncoder{nullptr};
-    int                 m_opusFrameSize{960};  // 20 мс для 48 кГц
+    OpusDecoder*        m_opusDecoder{nullptr};
     quint16             m_sequenceNumber{0};
+    QByteArray          m_encodedBuffer; ///< Закодированный буффер
     quint32             m_timestamp{0};
-    quint32             m_ssrc{123456};  // Уникальный идентификатор источника
-    quint16             m_frameSize{960}; // размер фрейма
-    quint8              m_numChannels{2}; // СТерео пока что
+    quint32             m_ssrc{DEFAULT_ID};  // Уникальный идентификатор источника
+    quint16             m_frameSize{DEFAULT_FRAMES_PER_BUFFER}; // размер фрейма
+    quint32             m_sampleRate{DEFAULT_SAMPLERATE}; // частота семплирования
+    quint8              m_numChannels{DEFAULT_CHANNELS}; // СТерео пока что
 };
 
 #endif // NETWORKCORE_H

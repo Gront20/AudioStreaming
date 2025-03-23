@@ -18,7 +18,7 @@ public:
     ~NetworkCore();
 
     void setDestination(const QHostAddress& address, const quint16 &port);
-    bool initOpus(int sampleRate, int channels);
+    bool initOpus(int sampleRate, int channels, int bitrate);
     void startListening();
     void closeConnection();
 
@@ -38,7 +38,9 @@ private:
     QHostAddress    m_clientAddress;
     quint16         m_clientPort;
     quint32         m_sampleRate;
-    quint8          m_channels;
+    quint8          m_numChannels{2};
+    quint16         m_frameSize{960};
+    uint32_t        m_ssrc{123456};
 };
 
 

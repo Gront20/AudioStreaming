@@ -8,7 +8,7 @@ NetworkHandler::NetworkHandler(QObject *parent)
     connect(m_networkCoreObject, &NetworkCore::sendAudioData, this, &NetworkHandler::sendAudioData);
     connect(m_networkCoreObject, &NetworkCore::sendSocketStatus, this, &NetworkHandler::handleNetworkCoreStatusData);
 
-    m_networkCoreObject->initOpus(48000, 2);
+    m_networkCoreObject->initOpus(48000, 2, 128000);
 }
 
 void NetworkHandler::sendAudioData(const QVector<float> &decodedSamples, const int &frameSize)

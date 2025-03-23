@@ -3,13 +3,12 @@
 NetworkHandler::NetworkHandler(QObject *parent) : QObject(parent)
 {
     connect(&m_networkCoreObject, &NetworkCore::sendSocketStatus, this, &NetworkHandler::handleNetworkCoreStatusData);
-    m_networkCoreObject.initOpus(48000, 2, 128000);
-    // m_networkCoreObject.setDestination(IP_DEFAULT, PORT_DEFAULT, false);
+    m_networkCoreObject.initOpus(DEFAULT_SAMPLERATE, DEFAULT_CHANNELS, DEFAULT_BITRATE);
 }
 
 void NetworkHandler::handleNetworkConnectionOpen(const QHostAddress &ip, const quint16 port)
 {
-    m_networkCoreObject.setDestination(ip, port);
+    m_networkCoreObject.setDestination(ip, port, true);
 }
 
 void NetworkHandler::handleNetworkConnectionClose()
@@ -22,6 +21,11 @@ void NetworkHandler::sendAudioSamples(const QVector<float> &samples)
     m_networkCoreObject.sendNextRtpPacket(samples);
 }
 
+void NetworkHandler::setPacketSize(const quint16 packetSize)
+{
+    m_networkCoreObject.setPacketSize(packetSize);
+}
+
 void NetworkHandler::handleNetworkCoreStatusData(const QVariant data)
 {
     QString message{""};
@@ -30,7 +34,6 @@ void NetworkHandler::handleNetworkCoreStatusData(const QVariant data)
 
         int status = dataMap["status"].toInt();
         quint32 packetSize = dataMap["packetSize"].toInt();
-
         emit sendNetworkDataSended(packetSize);
     }
     if (data.canConvert<int>()){

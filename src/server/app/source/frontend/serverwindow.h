@@ -13,7 +13,7 @@
 #include <QTimer>
 #include <QWidget>
 #include <QStyle>
-
+#include <QRegularExpression>
 
 #include <QtCharts/QChart>
 #include <QtCharts/QSplineSeries>
@@ -49,6 +49,7 @@ private:
     void componentsSetStyles();
     void setupAudioChart();
     void setupNetworkChart();
+    void setupLineEdits();
 
     HANDLERTYPE getHandlerType(QObject *sender);
 
@@ -71,6 +72,7 @@ private slots:
     void handleConnectionInputs();
     void updateNetworkGraph();
     void setVolumeValue(int value);
+    void setPacketSize();
 
 // Signals
 
@@ -83,6 +85,8 @@ signals:
     void openConnectionNetwork(const QHostAddress &ip, const quint16 port);
     void closeConnectionNetwork();
     void setVolumeValueToAudio(const float &value);
+
+    void sendPacketSize(const quint16 packetSize);
 
 private:
     Ui::ServerWindow *ui;
