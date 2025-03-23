@@ -102,36 +102,60 @@ void NetworkCore::stopStreaming()
 }
 
 void NetworkCore::sendNextRtpPacket(const QVector<float>& samples) {
+
     if (!m_isStreamingFlag || !m_isMulticast) return;
 
-    QByteArray pcmData;
-    for (float sample : samples) {
-        int16_t pcmSample = static_cast<int16_t>(sample * 32767); // Преобразуем float в int16_t
-        pcmData.append(reinterpret_cast<const char*>(&pcmSample), sizeof(int16_t));
+    QByteArray opusData(m_packetSize - 12, 0);
+    int encodedBytes = opus_encode_float(m_opusEncoder, samples.data(), m_frameSize,
+                                         reinterpret_cast<unsigned char*>(opusData.data()), opusData.size());
+
+    if (encodedBytes <= 0) {
+        emit sendSocketStatus(QVariant(static_cast<int>(NETWORK::CORE::STATUS::ERROR_OPUS_ENCODE)));
+        return;
     }
 
-    m_encodedBuffer.append(pcmData);
+    m_encodedBuffer.append(opusData.mid(0, encodedBytes));
+    m_encodedBuffer.append(QByteArray("\xDE\xAD\xBE\xEF", 4));
 
-    while (m_encodedBuffer.size() >= m_packetSize - 12) {
-        qDebug() << "Encoded buffer size:" << m_encodedBuffer.size();
+    int payloadSize = m_packetSize - 12 - 4;
+
+    if(m_encodedBuffer.size() >= payloadSize){
 
         QByteArray rtpPacket(m_packetSize, 0);
         uint8_t* rtpHeader = reinterpret_cast<uint8_t*>(rtpPacket.data());
 
-        rtpHeader[0] = 0x80; // Версия RTP (2), нет дополнений, нет расширения, нет CSRC
-        rtpHeader[1] = 0xE0; // Тип полезной нагрузки (96 для PCM)
-        rtpHeader[2] = (m_sequenceNumber >> 8) & 0xFF; // Номер последовательности (старший байт)
-        rtpHeader[3] = m_sequenceNumber & 0xFF; // Номер последовательности (младший байт)
-        rtpHeader[4] = (m_timestamp >> 24) & 0xFF; // Метка времени (старший байт)
+		// можно конечно добавить там в хидере rtp-пакета метки о неполном фрейме, но я решил вручную это сделать
+        rtpHeader[0] = 0x80;
+        rtpHeader[1] = 0xE0;
+        rtpHeader[2] = (m_sequenceNumber >> 8) & 0xFF;
+        rtpHeader[3] = m_sequenceNumber & 0xFF;
+        rtpHeader[4] = (m_timestamp >> 24) & 0xFF;
         rtpHeader[5] = (m_timestamp >> 16) & 0xFF;
         rtpHeader[6] = (m_timestamp >> 8) & 0xFF;
-        rtpHeader[7] = m_timestamp & 0xFF; // Метка времени (младший байт)
-        rtpHeader[8] = (m_ssrc >> 24) & 0xFF; // Идентификатор источника синхронизации (SSRC)
+        rtpHeader[7] = m_timestamp & 0xFF;
+        rtpHeader[8] = (m_ssrc >> 24) & 0xFF;
         rtpHeader[9] = (m_ssrc >> 16) & 0xFF;
         rtpHeader[10] = (m_ssrc >> 8) & 0xFF;
         rtpHeader[11] = m_ssrc & 0xFF;
 
-        memcpy(rtpPacket.data() + 12, m_encodedBuffer.data(), m_packetSize - 12);
+        while (m_encodedBuffer.size() > 0) {
+
+            int chunkSize = qMin(payloadSize, m_encodedBuffer.size());
+
+            memcpy(rtpPacket.data() + 12, m_encodedBuffer.data(), chunkSize);
+
+            if (m_encodedBuffer.size() <= payloadSize) {
+                // memcpy(rtpPacket.data() + 12 + chunkSize, "\xDE\xAD\xBE\xEF", 4);
+            } else {
+                memcpy(rtpPacket.data() + 12 + chunkSize, "\xCA\xFE\xBA\xBE", 4);
+            }
+
+            m_encodedBuffer.remove(0, chunkSize);
+
+            if (m_encodedBuffer.size() > 0) {
+                break;
+            }
+        }
 
         m_udpSocket->writeDatagram(rtpPacket, m_clientAddress, m_clientPort);
 
@@ -143,6 +167,6 @@ void NetworkCore::sendNextRtpPacket(const QVector<float>& samples) {
         m_sequenceNumber++;
         m_timestamp += m_frameSize;
 
-        m_encodedBuffer.remove(0, m_packetSize - 12);
     }
+
 }

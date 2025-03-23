@@ -95,19 +95,48 @@ void NetworkCore::processPendingDatagrams() {
         datagram.resize(m_udpSocket->pendingDatagramSize());
         m_udpSocket->readDatagram(datagram.data(), datagram.size());
 
-        QByteArray pcmPayload = datagram.mid(12);
+        QByteArray payload = datagram.mid(12);
 
-        QVector<float> samples;
-        for (int i = 0; i < pcmPayload.size(); i += sizeof(int16_t)) {
-            int16_t pcmSample = *reinterpret_cast<const int16_t*>(pcmPayload.constData() + i);
-            float sample = static_cast<float>(pcmSample) / 32768.0f; // Преобразуем int16_t воо float
-            samples.append(sample);
+        m_receivedBuffer.append(payload);
+
+        int pos = 0;
+        while (true) {
+            int markerPos = m_receivedBuffer.indexOf("\xDE\xAD\xBE\xEF", pos);
+            if (markerPos != -1) {
+                QByteArray frame = m_receivedBuffer.mid(pos, markerPos - pos);
+                pos = markerPos + 4;
+
+                QVector<float> pcmData(m_frameSize * m_numChannels);
+                int decodedSamples = opus_decode_float(
+                    m_opusDecoder,
+                    reinterpret_cast<const unsigned char*>(frame.constData()),
+                    frame.size(),
+                    pcmData.data(),
+                    m_frameSize,
+                    0
+                    );
+
+                if (decodedSamples > 0) {
+                    emit sendAudioData(pcmData, decodedSamples);
+                }
+            } else {
+                markerPos = m_receivedBuffer.indexOf("\xCA\xFE\xBA\xBE", pos);
+                if (markerPos != -1) {
+                    QByteArray partialFrame = m_receivedBuffer.mid(pos, markerPos - pos);
+                    pos = markerPos + 4;
+                    m_partialFrameBuffer.append(partialFrame);
+                } else {
+                    break;
+                }
+            }
         }
 
-        emit sendAudioData(samples, samples.size());
+        m_receivedBuffer.remove(0, pos);
+        m_receivedBuffer.append(m_partialFrameBuffer);
+        m_partialFrameBuffer.clear();
 
         QVariantMap data;
-        data["status"] = static_cast<int>(NETWORK::CORE::STATUS::SEND_PACKET);
+        // data["status"] = static_cast<int>(NETWORK::CORE::STATUS::RECEIVE_PACKET);
         data["packetSize"] = datagram.size();
         emit sendSocketStatus(data);
     }

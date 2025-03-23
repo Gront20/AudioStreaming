@@ -34,6 +34,8 @@ private:
     QUdpSocket      *m_udpSocket;
     QThread         m_networkThread;
     OpusDecoder     *m_opusDecoder;
+    QByteArray      m_receivedBuffer;
+    QByteArray      m_partialFrameBuffer;
     QMutex          m_mutex;
     QHostAddress    m_clientAddress;
     quint16         m_clientPort;
