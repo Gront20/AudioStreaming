@@ -54,6 +54,10 @@ void BaseAppCore::initializeNetworkHandler()
         connect(m_audioHandlerObject, &AudioHandler::handleAudioStatusUpdate, m_networkHandlerObject, &NetworkHandler::handleAudioStatusUpdate, Qt::QueuedConnection);
         connect(m_networkHandlerObject, &NetworkHandler::sendMessageToAppLogger, m_mainWindowObject, &ServerWindow::recieveMessage);
         connect(m_networkHandlerObject, &NetworkHandler::sendNetworkDataSended, m_mainWindowObject, &ServerWindow::addPacket);
+        connect(m_mainWindowObject, &ServerWindow::setNetworkMode, m_networkHandlerObject, &NetworkHandler::setNetworkMode);
+
+        connect(m_networkHandlerObject, &NetworkHandler::sendNetworkDataSended, m_mainWindowObject, &ServerWindow::addPacket);
+        connect(m_networkHandlerObject, &NetworkHandler::sendAudioDataToAudio, m_audioHandlerObject, &AudioHandler::recieveAudioData);
 
         m_appServerNetworkHandlerThread.start();
 
@@ -99,6 +103,11 @@ void BaseAppCore::initializeAudioHandler()
                 m_mainWindowObject, &ServerWindow::recieveAudioSamples);
         connect(m_mainWindowObject, &ServerWindow::setVolumeValueToAudio,
                 m_audioHandlerObject, &AudioHandler::setVolumeValue);
+        connect(m_audioHandlerObject, &AudioHandler::playbackPositionChanged,
+                m_mainWindowObject, &ServerWindow::playbackPositionChanged);
+
+        connect(m_mainWindowObject, &ServerWindow::setPlaybackPosition,
+                m_audioHandlerObject, &AudioHandler::setPlaybackPosition);
 
 
         m_appServerAudioHandlerThread.start();

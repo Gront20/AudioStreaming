@@ -140,6 +140,72 @@ bool AudioCore::loadFile(const std::string &filename)
     return !m_audioBuffer.empty();
 }
 
+void AudioCore::playAudio(QVector<float>& samples) {
+    if (samples.isEmpty()) {
+        emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::BUFFER_EMPTY);
+        return;
+    }
+
+    QMutexLocker locker(&m_mtx);
+
+    if (!m_stream || Pa_IsStreamStopped(m_stream)) {
+        cleanupStream();
+
+        PaError err = Pa_OpenDefaultStream(
+            &m_stream,
+            0,
+            m_numChannels,
+            paFloat32,
+            DEFAULT_SAMPLERATE,
+            DEFAULT_FRAMES_PER_BUFFER,
+            nullptr,
+            nullptr
+            );
+
+        if (err != paNoError) {
+            emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::STREAM_ERROR);
+            return;
+        }
+
+        if (Pa_StartStream(m_stream) != paNoError) {
+            emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::STREAM_ERROR);
+            return;
+        }
+    }
+
+    emit sendAudioSamples(samples);
+
+    std::transform(samples.begin(), samples.end(), samples.begin(),
+                   [this](float sample) { return sample * m_volumeValue; });
+
+    int numFrames = samples.size() / DEFAULT_CHANNELS;
+    PaError err = Pa_WriteStream(m_stream, samples.constData(), numFrames);
+
+    if (err != paNoError) {
+        if (err == paOutputUnderflowed) {
+
+            Pa_StopStream(m_stream);
+            Pa_StartStream(m_stream);
+            err = Pa_WriteStream(m_stream, samples.constData(), numFrames);
+        }
+
+        if (err != paNoError) {
+            emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::PA_ERROR);
+            cleanupStream();
+        }
+    }
+}
+
+void AudioCore::cleanupStream() {
+    if (m_stream) {
+        if (Pa_IsStreamActive(m_stream)) {
+            Pa_StopStream(m_stream);
+        }
+        Pa_CloseStream(m_stream);
+        m_stream = nullptr;
+    }
+}
+
 void AudioCore::play()
 {
     if (m_audioBuffer.empty()) {
@@ -148,7 +214,7 @@ void AudioCore::play()
         return;
     }
 
-    if (m_fileChanged || m_isFinished) {
+    if ((m_fileChanged || m_isFinished)) {
         m_bufferIndex = 0;
         m_fileChanged = false;
         m_isFinished = false;
@@ -158,6 +224,8 @@ void AudioCore::play()
         emit sendAudioStatus(m_fileName, AUDIO::CORE::STATUS::RESUME);
     else
         emit sendAudioStatus(m_fileName, AUDIO::CORE::STATUS::START);
+
+    QMutexLocker locker(&m_mtx);
 
     if (m_isPlaying && !m_isPaused) return;
 
@@ -171,6 +239,8 @@ void AudioCore::play()
     if (Pa_IsStreamStopped(m_stream) == 1) {
         Pa_StartStream(m_stream);
     }
+
+    m_cv.notify_all();
 }
 
 void AudioCore::stop()
@@ -178,15 +248,18 @@ void AudioCore::stop()
 
     if (!m_isPlaying) return;
 
+    QMutexLocker locker(&m_mtx);
 
     emit sendAudioStatus(m_fileName, AUDIO::CORE::STATUS::STOP);
 
     m_isPlaying = false;
-    m_isPlaying = true;
+    m_isPaused = true;
 
     if (m_stream && Pa_IsStreamActive(m_stream) == 1) {
         Pa_StopStream(m_stream);
     }
+
+    m_cv.notify_all();
 }
 
 void AudioCore::restart()
@@ -206,6 +279,29 @@ void AudioCore::restart()
     Pa_OpenDefaultStream(&m_stream, 0, 2, paFloat32, DEFAULT_SAMPLERATE, DEFAULT_FRAMES_PER_BUFFER, paCallback, this);
     Pa_StartStream(m_stream);
 
+    m_cv.notify_all();
+}
+
+void AudioCore::setPlaybackPosition(float pos) {
+    float position = qBound(0.0f, pos, 100.0f);
+
+    QMutexLocker locker(&m_mtx);
+
+    if (m_audioBuffer.empty()) {
+        return;
+    }
+
+    size_t newPosition = static_cast<size_t>((position / 100.) * m_audioBuffer.size());
+
+    m_bufferIndex = (newPosition / DEFAULT_CHANNELS) * DEFAULT_CHANNELS;
+
+    if (m_bufferIndex >= m_audioBuffer.size()) {
+        m_bufferIndex = m_audioBuffer.size() - DEFAULT_FRAMES_PER_BUFFER * DEFAULT_CHANNELS;
+    }
+    else{
+        m_isFinished = false;
+    }
+    emit playbackPositionChanged(position / 100.);
 }
 
 int AudioCore::paCallback(const void *inputBuffer, void *outputBuffer,
@@ -215,6 +311,7 @@ int AudioCore::paCallback(const void *inputBuffer, void *outputBuffer,
     AudioCore *player = static_cast<AudioCore *>(userData);
     float *out = (float *)outputBuffer;
 
+    QMutexLocker locker(&player->m_mtx);
 
     if (player->m_isPaused || player->m_isFinished) {
         memset(out, 0, framesPerBuffer * DEFAULT_CHANNELS * sizeof(float));
@@ -252,6 +349,10 @@ int AudioCore::paCallback(const void *inputBuffer, void *outputBuffer,
 
     // memcpy(out, &player->audioBuffer[player->bufferIndex], samplesToCopy * sizeof(float));
     player->m_bufferIndex += samplesToCopy;
+
+    // Отправка текущей позиции
+    float currentPos = static_cast<float>(player->m_bufferIndex) / player->m_audioBuffer.size();
+    emit player->playbackPositionChanged(currentPos);
 
     return paContinue;
 }

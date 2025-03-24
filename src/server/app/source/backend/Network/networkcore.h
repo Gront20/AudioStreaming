@@ -19,7 +19,7 @@ public:
     explicit NetworkCore(QObject* parent = nullptr);
     ~NetworkCore();
 
-    void setDestination(const QHostAddress& address, quint16 port, bool multicast);
+    void setDestination(const QHostAddress& address, quint16 port);
     void closeConnection();
     bool initOpus(int sampleRate = DEFAULT_SAMPLERATE, int channels = DEFAULT_CHANNELS, int bitrate = DEFAULT_BITRATE);
     void setPacketSize(const int size);
@@ -30,10 +30,17 @@ public slots:
     void stopStreaming();
     // void restartStreaming();
     void sendNextRtpPacket(const QVector<float> &samples);
+    void processPendingDatagrams();
+    void setMode(const NETWORK::CORE::MODE mode);
 
 signals:
 
     void sendSocketStatus(const QVariant data);
+    void sendAudioData(QVector<float> data);
+
+private:
+
+    NETWORK::CORE::MODE m_currentMode{NETWORK::CORE::MODE::UNDEFINED};
 
 private:
     QUdpSocket          *m_udpSocket;
@@ -45,10 +52,12 @@ private:
     QVector<float>      m_audioBuffer;
     int                 m_bufferIndex{0};
     bool                m_isStreamingFlag{false};
-    bool                m_isMulticast{false};
-    QMutex              m_mutex;
-    QVector<float>      m_samplesBuffer, m_samplesBuffer1;
+    bool                m_isPlayingFlag{false};
+    QVector<float>      m_samplesBuffer;
+    QByteArray          m_receivedBuffer; ///< Буффер получаемых данных
+    QByteArray          m_partialFrameBuffer; ///< Буффер данных до метки "незавершенный буффер"
 
+    QMutex              m_mtx;
 
     OpusEncoder*        m_opusEncoder{nullptr};
     OpusDecoder*        m_opusDecoder{nullptr};

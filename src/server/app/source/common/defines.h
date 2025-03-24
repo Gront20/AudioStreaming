@@ -17,6 +17,9 @@
 
 #define DEFAULT_VOLUME 50
 
+#define MARKER_FRAME_ENDED "\xDE\xAD\xBE\xEF"
+#define MARKER_FRAME_NOT_ENDED "\xCA\xFE\xBA\xBE"
+
 namespace APPCORE {
 
 enum class INITILIZE : int {
@@ -46,6 +49,13 @@ enum class STATUS : int {
 };
 
 namespace CORE {
+
+enum class MODE: int {
+    SEND,
+    RECIEVE,
+    UNDEFINED
+};
+
 enum class STATUS : int {
     ALREADY_BOUNDED = 1,
     FAILED_BIND,
@@ -55,6 +65,9 @@ enum class STATUS : int {
     ERROR_OPUS_ENCODE,
     STATE_CHANGED,
     SEND_PACKET,
+    RECEIVE_PACKET,
+    MODE_RECIEVE_SWITCHED,
+    MODE_SEND_SWITCHED,
     CLOSED
 };
 
@@ -66,13 +79,6 @@ QString networkCoreStatusToString(const STATUS code);
 namespace AUDIO {
 
 namespace HANDLER {
-
-enum class STATUS : int {
-    ERROR_AUDIO = -1, ///< file is ready or not
-    PROCESSING,
-    ISREADY,
-    UNDEFINDED
-};
 
 enum class MODE : int {
     START, ///< media player current mode
@@ -100,6 +106,7 @@ enum class ERROR_HANDLER : int {
     STREAM_INFO,
     STREAM_ERROR,
     CODEC_ERROR,
+    PA_ERROR,
     SWRESAMPLE_ERROR,
     BUFFER_EMPTY
 };

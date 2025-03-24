@@ -15,11 +15,13 @@ public:
 private slots:
 
     void handleNetworkCoreStatusData(const QVariant data);
+    void sendAudioData(QVector<float> decodedSamples);
 
 signals:
 
     void sendMessageToAppLogger(const QString message);
     void sendNetworkDataSended(const quint32 data);
+    void sendAudioDataToAudio(QVector<float> decodedSamples);
 
 public slots:
 
@@ -27,6 +29,7 @@ public slots:
     void handleAudioStatusUpdate(const AUDIO::CORE::STATUS &status);
     void handleNetworkConnectionOpen(const QHostAddress &ip, const quint16 port);
     void handleNetworkConnectionClose();
+    void setNetworkMode(const NETWORK::CORE::MODE mode);
 
     void setPacketSize(const quint16 packetSize);
 

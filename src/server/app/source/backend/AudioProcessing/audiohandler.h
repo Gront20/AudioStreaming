@@ -22,6 +22,8 @@ public slots:
     void audioPlayerChangeState(AUDIO::HANDLER::MODE mode);
     void sendAudioSamples(const QVector<float> &samples);
     void setVolumeValue(const float &value);
+    void recieveAudioData(QVector<float> decodedSamples);
+    void setPlaybackPosition(float pos);
 
     void startAudio();
     void stopAudio();
@@ -31,6 +33,7 @@ private slots:
 
     void errorCatched(const AUDIO::CORE::ERROR_HANDLER &errorCode);
     void audioStatusCatched(const QString &fileName, const AUDIO::CORE::STATUS &status);
+    void playbackPositionChangedSLOT(float pos);
 
 signals:
 
@@ -38,18 +41,12 @@ signals:
     void sendAudioStatusMessage(const QString &message);
     void handleAudioStatusUpdate(const AUDIO::CORE::STATUS &status);
     void sendAudioSamplesFromCore(const QVector<float> &samples);
-
-private:
-
-    void checkFilePresence();
-    void checkFileTimerConnection();
-    void changeAudioStatus(AUDIO::HANDLER::STATUS status);
+    void playbackPositionChanged(float pos);
 
 private:
 
     QString                     m_filePath{};
     AudioCore                   m_audioCoreObject;
-    AUDIO::HANDLER::STATUS      m_status;
 
 };
 

@@ -27,6 +27,8 @@ public:
     bool loadFile(const std::string& filename);
     void changeFile(const std::string& newFilePath);
     void setVolumeValue(const float &value);
+    void playAudio(QVector<float>& samples);
+    void setPlaybackPosition(float position);
 
     void play();
     void stop();
@@ -37,6 +39,7 @@ signals:
     void sendAudioSamples(const QVector<float> &samples);
     void sendCurrentStateError(const AUDIO::CORE::ERROR_HANDLER &errorCode);
     void sendAudioStatus(const QString &fileName, const AUDIO::CORE::STATUS &status);
+    void playbackPositionChanged(float position);
 
 private:
 
@@ -45,15 +48,20 @@ private:
                           PaStreamCallbackFlags statusFlags, void *userData);
 
     void cleanup();
+    void cleanupStream();
 
 private:
 
     std::vector<float>      m_audioBuffer;
-    size_t                  m_bufferIndex = 0;
+    size_t                  m_bufferIndex{0};
+    quint8                  m_numChannels{DEFAULT_CHANNELS};
 
     QString                 m_fileName{};
 
-    float                   m_volumeValue{1.f};
+    float                   m_volumeValue{DEFAULT_VOLUME / 100.};
+
+    QMutex                  m_mtx;
+    std::condition_variable m_cv;
 
     std::atomic<bool>       m_isPlaying{false};
     std::atomic<bool>       m_isPaused{false};

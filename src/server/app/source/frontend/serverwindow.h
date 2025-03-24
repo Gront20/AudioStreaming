@@ -59,6 +59,7 @@ public slots:
     void handleAudioStatusUpdate(const AUDIO::CORE::STATUS &status);
     void recieveAudioSamples(const QVector<float> &samples);
     void addPacket(const quint16 packetSize);
+    void playbackPositionChanged(float pos);
 
 // slots for GUI
 
@@ -86,6 +87,10 @@ signals:
     void closeConnectionNetwork();
     void setVolumeValueToAudio(const float &value);
 
+    void setNetworkMode(const NETWORK::CORE::MODE &mode);
+    void setPlaybackPosition(float pos);
+    void setPauseForSeek(bool pause);
+
     void sendPacketSize(const quint16 packetSize);
 
 private:
@@ -95,6 +100,8 @@ private:
     QString             m_labelStyle{""};
     QString             m_lineEditStyle{""};
     QString             m_textBrowserStyle{""};
+
+    bool                m_sliderPressed{false};
 
     // logger lines
     QStringList         m_logLines;

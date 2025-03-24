@@ -5,7 +5,7 @@ AudioHandler::AudioHandler(QObject *parent) : QObject(parent)
    connect(&m_audioCoreObject, &AudioCore::sendAudioSamples, this, &AudioHandler::sendAudioSamples);
    connect(&m_audioCoreObject, &AudioCore::sendCurrentStateError, this, &AudioHandler::errorCatched);
    connect(&m_audioCoreObject, &AudioCore::sendAudioStatus, this, &AudioHandler::audioStatusCatched);
-//    m_audioCoreObject.initialize();
+   connect(&m_audioCoreObject, &AudioCore::playbackPositionChanged, this, &AudioHandler::playbackPositionChangedSLOT);
 }
 
 AudioHandler::~AudioHandler()
@@ -50,10 +50,7 @@ void AudioHandler::audioPlayerChangeState(AUDIO::HANDLER::MODE mode)
 void AudioHandler::receiveAudioFilePath(const QString& path)
 {
     m_filePath = path;
-    checkFileTimerConnection();
     m_audioCoreObject.changeFile(path.toUtf8().constData());
-//    if (result)
-    changeAudioStatus(AUDIO::HANDLER::STATUS::ISREADY);
 }
 
 void AudioHandler::setVolumeValue(const float &value)
@@ -61,45 +58,37 @@ void AudioHandler::setVolumeValue(const float &value)
     m_audioCoreObject.setVolumeValue(value);
 }
 
+void AudioHandler::playbackPositionChangedSLOT(float value)
+{
+    emit playbackPositionChanged(value);
+}
+
 void AudioHandler::sendAudioSamples(const QVector<float> &samples)
 {
     emit sendAudioSamplesFromCore(samples);
 }
 
-void AudioHandler::changeAudioStatus(AUDIO::HANDLER::STATUS status)
+void AudioHandler::recieveAudioData(QVector<float> decodedSamples)
 {
-    this->m_status = status;
+    m_audioCoreObject.playAudio(decodedSamples);
+}
+
+void AudioHandler::setPlaybackPosition(float pos)
+{
+    m_audioCoreObject.setPlaybackPosition(pos);
 }
 
 void AudioHandler::startAudio()
 {
-    if(m_status == AUDIO::HANDLER::STATUS::ISREADY){
-        m_audioCoreObject.play();
-    }
+    m_audioCoreObject.play();
 }
 
 void AudioHandler::stopAudio()
 {
-    if(m_status == AUDIO::HANDLER::STATUS::ISREADY){
-        m_audioCoreObject.stop();
-    }
+    m_audioCoreObject.stop();
 }
 
 void AudioHandler::restartAudio()
 {
-    if(m_status == AUDIO::HANDLER::STATUS::ISREADY){
-        m_audioCoreObject.restart();
-    }
-}
-
-void AudioHandler::checkFileTimerConnection()
-{
-    // QTimer *timer = new QTimer(this);
-    // connect(timer, &QTimer::timeout, this, &AudioHandler::checkFilePresence);
-    // timer->start(200);
-}
-
-void AudioHandler::checkFilePresence()
-{
-
+    m_audioCoreObject.restart();
 }

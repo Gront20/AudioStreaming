@@ -19,6 +19,9 @@ QString AUDIO::CORE::errorCodeToString(const AUDIO::CORE::ERROR_HANDLER &errorCo
     case AUDIO::CORE::ERROR_HANDLER::BUFFER_EMPTY:
         message = QString("Buffer is empty.");
         break;
+    case AUDIO::CORE::ERROR_HANDLER::PA_ERROR:
+        message = QString("Stream error.");
+        break;
     default:
         message = QString("Unknown error occurred.");
         break;
@@ -70,8 +73,20 @@ QString NETWORK::CORE::networkCoreStatusToString(const NETWORK::CORE::STATUS cod
     case NETWORK::CORE::STATUS::STATE_CHANGED:
         message = QString("Socket state changed.");
         break;
+    case NETWORK::CORE::STATUS::SEND_PACKET:
+        message = QString("Packet sended.");
+        break;
+    case NETWORK::CORE::STATUS::RECEIVE_PACKET:
+        message = QString("Packet recieved.");
+        break;
+    case NETWORK::CORE::STATUS::MODE_RECIEVE_SWITCHED:
+        message = QString("Network mode switched to RECIEVE.");
+        break;
+    case NETWORK::CORE::STATUS::MODE_SEND_SWITCHED:
+        message = QString("Network mode switched to TRANSMIT");
+        break;
     case NETWORK::CORE::STATUS::BOUNDED:
-        message = QString("UDP socket bounded");
+        message = QString("UDP socket ready");
         break;
     case NETWORK::CORE::STATUS::CLOSED:
         message = QString("UDP socket closed connection!");
