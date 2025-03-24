@@ -1,0 +1,8 @@
+#mainTitleLabel {
+    color: yellow;
+    background-color: gray;
+}
+
+#titleLabel {
+    color: yellow;
+}

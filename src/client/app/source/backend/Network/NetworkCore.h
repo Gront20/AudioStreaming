@@ -27,22 +27,21 @@ private slots:
 
 signals:
 
-    void sendAudioData(const QVector<float> &decodedSamples, const int &frameSize);
+    void sendAudioData(QVector<float> &decodedSamples);
     void sendSocketStatus(const QVariant data);
 
 private:
     QUdpSocket      *m_udpSocket;
     QThread         m_networkThread;
     OpusDecoder     *m_opusDecoder;
-    QByteArray      m_receivedBuffer;
-    QByteArray      m_partialFrameBuffer;
-    QMutex          m_mutex;
+    QByteArray      m_receivedBuffer; ///< Буффер получаемых данных
+    QByteArray      m_partialFrameBuffer; ///< Буффер данных до метки "незавершенный буффер"
     QHostAddress    m_clientAddress;
     quint16         m_clientPort;
     quint32         m_sampleRate;
-    quint8          m_numChannels{2};
-    quint16         m_frameSize{960};
-    uint32_t        m_ssrc{123456};
+    quint8          m_numChannels{DEFAULT_CHANNELS};
+    quint16         m_frameSize{DEFAULT_FRAMES_PER_BUFFER};
+    uint32_t        m_ssrc{DEFAULT_ID};
 };
 
 

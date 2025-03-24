@@ -27,7 +27,7 @@ endmacro()
 # ==================================================================================================
 
 macro(internal_init_qt_common)
-    if (CONFIG_RELEASE)
+    if (CMAKE_BUILD_TYPE STREQUAL "Release")
         target_compile_definitions(${PROJECT_NAME} PUBLIC
             QT_NO_DEBUG_OUTPUT QT_NO_INFO_OUTPUT QT_NO_WARNING_OUTPUT)
     endif()
@@ -84,11 +84,8 @@ macro(init_qt_console_build)
     )
 endmacro()
 
-macro(init_build)
-    internal_apply_compile_definitions()
-    internal_apply_target_libraries()
-    update_output_name()
-    core_init_namespace()
+macro(generate_exe)
+    set(CONFIG_RELEASE ON)
 
     get_filename_component(MINGW_PATH ${CMAKE_CXX_COMPILER} DIRECTORY)
 
@@ -105,18 +102,34 @@ macro(init_build)
             $<TARGET_FILE:${PROJECT_NAME}>
             --no-compiler-runtime
             --no-translations
+            --release
+    )
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>/*.d
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>/*.cmake
     )
 
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${PROJECT_SOURCE_DIR}/libs/PortAudio/bin/libportaudio.dll
-            ${PROJECT_SOURCE_DIR}/libs/Ffmpeg/bin/avcodec-60.dll
-            ${PROJECT_SOURCE_DIR}/libs/Ffmpeg/bin/avutil-58.dll
-            ${PROJECT_SOURCE_DIR}/libs/Ffmpeg/bin/avformat-60.dll
             ${PROJECT_SOURCE_DIR}/libs/Ffmpeg/bin/swresample-4.dll
+            ${PROJECT_SOURCE_DIR}/libs/Ffmpeg/bin/avutil-58.dll
             ${MINGW_PATH}/bin/libgcc_s_seh-1.dll
             ${MINGW_PATH}/bin/libstdc++-6.dll
             ${MINGW_PATH}/bin/libwinpthread-1.dll
             $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
+
+endmacro()
+
+macro(init_build)
+
+    # message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+    internal_apply_compile_definitions()
+    internal_apply_target_libraries()
+    update_output_name()
+    core_init_namespace()
+    generate_exe()
 endmacro()

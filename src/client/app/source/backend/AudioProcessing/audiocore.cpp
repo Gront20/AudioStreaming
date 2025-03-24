@@ -2,7 +2,7 @@
 #include <QDebug>
 
 AudioCore::AudioCore(QObject* parent)
-    : QObject(parent), m_formatContext(nullptr), m_codecContext(nullptr), m_swrContext(nullptr), m_isPlaying(false) {
+    : QObject(parent), m_isPlaying(false) {
 
     PaError err = Pa_Initialize();
     if (err != paNoError) {
@@ -17,7 +17,7 @@ AudioCore::AudioCore(QObject* parent)
         return;
     }
 
-    outputParams.channelCount = m_channels;
+    outputParams.channelCount = m_numChannels;
     outputParams.sampleFormat = paFloat32;
     outputParams.suggestedLatency = Pa_GetDeviceInfo(outputParams.device)->defaultLowOutputLatency;
     outputParams.hostApiSpecificStreamInfo = nullptr;
@@ -31,28 +31,34 @@ AudioCore::AudioCore(QObject* parent)
 
 AudioCore::~AudioCore() {
     stop();
+    cleanup();
 }
 
 bool AudioCore::init(int sampleRate, int channels) {
     m_sampleRate = sampleRate;
-    m_channels = channels;
+    m_numChannels = channels;
 
-    if (m_swrContext) {
-        swr_free(&m_swrContext);
+    if (m_swr_ctx) {
+        swr_free(&m_swr_ctx);
     }
 
-    m_swrContext = swr_alloc_set_opts(nullptr,
+    m_swr_ctx = swr_alloc_set_opts(nullptr,
                                       av_get_default_channel_layout(channels), AV_SAMPLE_FMT_FLT, sampleRate,
                                       av_get_default_channel_layout(channels), AV_SAMPLE_FMT_S16, sampleRate,
                                       0, nullptr);
-    if (!m_swrContext || swr_init(m_swrContext) < 0) {
+    if (!m_swr_ctx || swr_init(m_swr_ctx) < 0) {
         emit sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER::SWRESAMPLE_ERROR);
         return false;
     }
     return true;
 }
 
-void AudioCore::playAudio(const QVector<float>& samples, int frameSize) {
+void AudioCore::setVolumeValue(const float& value)
+{
+    this->m_volumeValue = qBound(0.0f, value, 1.0f);
+}
+
+void AudioCore::playAudio(QVector<float>& samples) {
 
     if (!m_isPlaying) return;
 
@@ -66,8 +72,10 @@ void AudioCore::playAudio(const QVector<float>& samples, int frameSize) {
         return;
     }
 
-    int numFrames = samples.size() / m_channels;
+    int numFrames = samples.size() / m_numChannels;
 
+    for (unsigned i = 0; i < samples.size(); ++i)
+        samples[i] = samples[i] * m_volumeValue;
 
     PaError err = Pa_WriteStream(stream, samples.data(), numFrames);
     if (err != paNoError) {
@@ -93,7 +101,7 @@ void AudioCore::start() {
         return;
     }
 
-    outputParams.channelCount = m_channels;
+    outputParams.channelCount = m_numChannels;
     outputParams.sampleFormat = paFloat32;
     outputParams.suggestedLatency = Pa_GetDeviceInfo(outputParams.device)->defaultLowOutputLatency;
     outputParams.hostApiSpecificStreamInfo = nullptr;
@@ -138,10 +146,18 @@ void AudioCore::stop() {
 
     Pa_Terminate();
 
-    if (m_swrContext) {
-        swr_free(&m_swrContext);
-        m_swrContext = nullptr;
+    if (m_swr_ctx) {
+        swr_free(&m_swr_ctx);
+        m_swr_ctx = nullptr;
     }
 
     m_isPlaying = false;
 }
+
+void AudioCore::cleanup()
+{
+    if (m_swr_ctx) {
+        swr_free(&m_swr_ctx);
+    }
+}
+

@@ -73,6 +73,9 @@ QString NETWORK::CORE::networkCoreStatusToString(const NETWORK::CORE::STATUS cod
     case NETWORK::CORE::STATUS::STATE_CHANGED:
         message = QString("Socket state changed.");
         break;
+    case NETWORK::CORE::STATUS::RECEIVE_PACKET:
+        message = QString("Packet recieved.");
+        break;
     case NETWORK::CORE::STATUS::BOUNDED:
         message = QString("UDP socket bounded");
         break;

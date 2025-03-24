@@ -13,7 +13,6 @@ extern "C" {
     #include <libavformat/avformat.h>
     #include <libavcodec/avcodec.h>
     #include <libswresample/swresample.h>
-    #include <libavutil/opt.h>
     #include <portaudio.h>
 }
 
@@ -47,83 +46,27 @@ private:
 
     void cleanup();
 
-    std::vector<float> audioBuffer;
-    size_t bufferIndex = 0;
+private:
 
-    QString m_fileName{};
+    std::vector<float>      m_audioBuffer;
+    size_t                  m_bufferIndex = 0;
 
-    float             m_volumeValue{1.f};
+    QString                 m_fileName{};
 
-    std::atomic<bool> isPlaying{false};
-    std::atomic<bool> isPaused{false};
-    std::atomic<bool> fileChanged{false};
-    bool isFinished = false;
+    float                   m_volumeValue{1.f};
 
-    QMutex mtx;
-    std::condition_variable cv;
+    std::atomic<bool>       m_isPlaying{false};
+    std::atomic<bool>       m_isPaused{false};
+    std::atomic<bool>       m_fileChanged{false};
+    bool                    m_isFinished = false;
 
-    PaStream *stream = nullptr;
-
-    AVFormatContext *fmt_ctx = nullptr;
-    AVCodecContext *codec_ctx = nullptr;
-    AVPacket *packet = nullptr;
-    AVFrame *frame = nullptr;
-    SwrContext *swr_ctx = nullptr;
+    PaStream                *m_stream = nullptr;
+    AVFormatContext         *m_fmt_ctx = nullptr;
+    AVCodecContext          *m_codec_ctx = nullptr;
+    AVPacket                *m_packet = nullptr;
+    AVFrame                 *m_frame = nullptr;
+    SwrContext              *m_swr_ctx = nullptr;
 
 };
-
-
-// #include <Windows.h>
-// #include <Audioclient.h>
-// #include <Audiopolicy.h>
-// #include <mmdeviceapi.h>
-
-//class AudioCore : public QObject
-//{
-//    Q_OBJECT
-//public:
-//    explicit AudioCore(QObject *parent = nullptr);
-//    ~AudioCore();
-
-//public:
-
-//    void initialize();
-
-//    // main mediaplayer functions
-//    void start();
-//    void stop();
-//    void restart();
-
-//    bool setFilePath(const char *filepath);
-
-//signals:
-
-//    void sendCurrentStateError(AUDIO::CORE::ERROR_HANDLER error, HRESULT hr);
-//    void sendAudioStatus(AUDIO::CORE::STATUS status);
-
-//private:
-
-//    const char      *m_filepath{};
-//    FILE            *m_file{nullptr};
-//    BYTE            m_audioData[1024];
-//    size_t          m_bytesRead;
-//    UINT32          m_bufferFrameCount{50};
-//    WAVEFORMATEX    *m_pwfx;
-//    UINT32          m_cbWfx{sizeof(WAVEFORMATEX)};
-//    HRESULT         m_hr;
-//    HANDLE          m_hEvent;
-//    UINT32          m_lastReadPosition{0};
-
-//    QThread m_audioThread;
-
-//private:
-
-//    IMMDeviceEnumerator    *m_Enumerator{nullptr};
-//    IMMDevice              *m_DefaultDevice{nullptr};
-//    IAudioClient           *m_AudioClient{nullptr};
-//    IAudioRenderClient     *m_RenderClient{nullptr};
-//    WAVEFORMATEX            m_AudioFormat;
-
-//};
 
 #endif // AUDIOCORE_H

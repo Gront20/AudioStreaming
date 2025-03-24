@@ -3,13 +3,20 @@
 #include <QHostAddress>
 #include <QString>
 
-#define IP_DEFAULT QHostAddress::LocalHost
-#define PORT_DEFAULT 8080
+#define DEFAULT_IP QHostAddress::LocalHost
+#define DEFAULT_PORT 8080
 
 // for codec default parameters
 #define DEFAULT_SAMPLERATE 48000
 #define DEFAULT_CHANNELS 2
 #define DEFAULT_BITRATE 128000
+#define DEFAULT_FRAMES_PER_BUFFER 960
+#define DEFAULT_ID 123456
+
+#define DEFAULT_VOLUME 100
+
+#define MARKER_FRAME_ENDED "\xDE\xAD\xBE\xEF"
+#define MARKER_FRAME_NOT_ENDED "\xCA\xFE\xBA\xBE"
 
 namespace APPCORE{
 
@@ -39,23 +46,23 @@ namespace NETWORK {
         UNDEFINDED
     };
 
-namespace CORE {
-enum class STATUS : int {
-    ALREADY_BOUNDED = 1,
-    FAILED_BIND,
-    BOUNDED,
-    REBINDING,
-    FAILED_READ,
-    ERROR_SOCKET,
-    ERROR_OPUS_INIT,
-    ERROR_OPUS_DECODE,
-    STATE_CHANGED,
-    SEND_PACKET,
-    CLOSED
-};
+    namespace CORE {
+    enum class STATUS : int {
+        ALREADY_BOUNDED = 1,
+        FAILED_BIND,
+        BOUNDED,
+        REBINDING,
+        FAILED_READ,
+        ERROR_SOCKET,
+        ERROR_OPUS_INIT,
+        ERROR_OPUS_DECODE,
+        STATE_CHANGED,
+        RECEIVE_PACKET,
+        CLOSED
+    };
 
-QString networkCoreStatusToString(const STATUS code);
-}
+    QString networkCoreStatusToString(const STATUS code);
+    }
 }
 
 namespace AUDIO {

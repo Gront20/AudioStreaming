@@ -1,5 +1,5 @@
-#ifndef CLIENTWINDOW_H
-#define CLIENTWINDOW_H
+#ifndef SERVERWINDOW_H
+#define SERVERWINDOW_H
 
 #include <QApplication>
 #include <QFileDialog>
@@ -120,4 +120,4 @@ private:
     QVector<int>        m_packetDataBuffer;
 
 };
-#endif // CLIENTWINDOW_H
+#endif // SERVERWINDOW_H

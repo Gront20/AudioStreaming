@@ -71,12 +71,15 @@ void ServerWindow::componentsSetStyles()
     ui->labelAudioFileSelectioInfo->setObjectName("mainTitleLabel");
     ui->labelVolumeMainInfo->setObjectName("mainTitleLabel");
     ui->labelMediaPlayerControls->setObjectName("mainTitleLabel");
+    ui->labelPacketSettings->setObjectName("mainTitleLabel");
+    ui->labelNetworkSettings->setObjectName("mainTitleLabel");
     ui->labelAppLogger->setFont(QFont("Arial", 10, QFont::Bold));
     ui->labelFileInfo->setFont(QFont("Arial", 10, QFont::Bold));
     ui->labelAudioFileSelectioInfo->setFont(QFont("Arial", 10, QFont::Bold));
     ui->labelVolumeMainInfo->setFont(QFont("Arial", 10, QFont::Bold));
     ui->labelMediaPlayerControls->setFont(QFont("Arial", 10, QFont::Bold));
-
+    ui->labelPacketSettings->setFont(QFont("Arial", 10, QFont::Bold));
+    ui->labelNetworkSettings->setFont(QFont("Arial", 10, QFont::Bold));
 
     ui->labelIP->setObjectName("titleLabel");
     ui->labelPort->setObjectName("titleLabel");
@@ -104,6 +107,8 @@ void ServerWindow::componentsSetStyles()
     ui->labelVolumeValue->setStyleSheet(m_labelStyle);
     ui->labelVolumeMainInfo->setStyleSheet(m_labelStyle);
     ui->labelMediaPlayerControls->setStyleSheet(m_labelStyle);
+    ui->labelPacketSettings->setStyleSheet(m_labelStyle);
+    ui->labelNetworkSettings->setStyleSheet(m_labelStyle);
 
     ui->lineEditIP->setObjectName("lineEdit");
     ui->lineEditPort->setObjectName("lineEdit");
@@ -574,16 +579,17 @@ void ServerWindow::selectAudioFile()
         emit audioFileStartProcessing(filePath);
 
         QFileInfo fileInfo(filePath);
-        QString fileInfoText = "Информация о файле:\n\n";
-        fileInfoText += "Полный путь: " + fileInfo.absoluteFilePath() + "\n";
-        fileInfoText += "Имя файла: " + fileInfo.fileName() + "\n";
-        fileInfoText += "Расширение файла: " + fileInfo.suffix() + "\n";
-        fileInfoText += "Размер файла: " + QString::number(fileInfo.size()) + " байт\n";
-        fileInfoText += "Дата создания: " + fileInfo.birthTime().toString() + "\n";
-        fileInfoText += "Дата последнего изменения: " + fileInfo.lastModified().toString() + "\n";
-        fileInfoText += "Дата последнего чтения: " + fileInfo.lastRead().toString() + "\n";
+        QString fileInfoText = "<font color='yellow'>File Information:</font><br><br>";
+        fileInfoText += "<font color='lightblue'>Full Path:</font> " + fileInfo.absoluteFilePath() + "<br>";
+        fileInfoText += "<font color='lightblue'>File Name:</font> " + fileInfo.fileName() + "<br>";
+        fileInfoText += "<font color='lightblue'>File Extension:</font> " + fileInfo.suffix() + "<br>";
+        fileInfoText += "<font color='lightblue'>File Size:</font> " + QString::number(fileInfo.size()) + " bytes<br>";
+        fileInfoText += "<font color='lightblue'>Creation Date:</font> " + fileInfo.birthTime().toString() + "<br>";
+        fileInfoText += "<font color='lightblue'>Last Modified Date:</font> " + fileInfo.lastModified().toString() + "<br>";
+        fileInfoText += "<font color='lightblue'>Last Accessed Date:</font> " + fileInfo.lastRead().toString() + "<br>";
 
-        ui->textBrowserFileInfo->setPlainText(fileInfoText);
+        ui->textBrowserFileInfo->setHtml(fileInfoText);
+
     }
 }
 

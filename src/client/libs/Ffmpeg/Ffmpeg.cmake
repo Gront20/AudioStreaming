@@ -10,7 +10,5 @@ src_end()
 # ============================================ LIBRARY =============================================
 # ==================================================================================================
 
-add_target_libraries("${CMAKE_CURRENT_LIST_DIR}/lib/avformat.lib")
-add_target_libraries("${CMAKE_CURRENT_LIST_DIR}/lib/avcodec.lib")
 add_target_libraries("${CMAKE_CURRENT_LIST_DIR}/lib/avutil.lib")
 add_target_libraries("${CMAKE_CURRENT_LIST_DIR}/lib/swresample.lib")

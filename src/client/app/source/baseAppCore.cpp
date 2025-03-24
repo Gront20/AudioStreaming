@@ -89,6 +89,8 @@ void BaseAppCore::initializeAudioHandler()
                 m_mainWindowObject, &ClientWindow::handleAudioStatusUpdate);
         connect(m_audioHandlerObject, &AudioHandler::sendAudioSamplesFromCore,
                 m_mainWindowObject, &ClientWindow::recieveAudioSamples);
+        connect(m_mainWindowObject, &ClientWindow::setVolumeValueToAudio,
+                m_audioHandlerObject, &AudioHandler::setVolumeValue);
 
 
         m_appClientAudioHandlerThread.start();

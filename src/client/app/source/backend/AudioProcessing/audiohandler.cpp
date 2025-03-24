@@ -5,7 +5,7 @@ AudioHandler::AudioHandler(QObject *parent) : QObject(parent)
    connect(&m_audioCoreObject, &AudioCore::sendAudioSamples, this, &AudioHandler::sendAudioSamples);
    connect(&m_audioCoreObject, &AudioCore::sendCurrentStateError, this, &AudioHandler::errorCatched);
    connect(&m_audioCoreObject, &AudioCore::sendAudioStatus, this, &AudioHandler::audioStatusCatched);
-   m_audioCoreObject.init(48000, 2);
+   m_audioCoreObject.init(DEFAULT_SAMPLERATE, DEFAULT_CHANNELS);
 }
 
 AudioHandler::~AudioHandler()
@@ -13,10 +13,11 @@ AudioHandler::~AudioHandler()
 
 }
 
-void AudioHandler::recieveAudioData(const QVector<float> &decodedSamples, const int &frameSize)
+void AudioHandler::recieveAudioData(QVector<float> &decodedSamples)
 {
-    m_audioCoreObject.playAudio(decodedSamples, frameSize);
+    m_audioCoreObject.playAudio(decodedSamples);
 }
+
 void AudioHandler::errorCatched(const AUDIO::CORE::ERROR_HANDLER &errorCode)
 {
     QString message = QString("%1").arg(AUDIO::CORE::errorCodeToString(errorCode));
@@ -48,9 +49,14 @@ void AudioHandler::audioPlayerChangeState(AUDIO::HANDLER::MODE mode)
     }
 }
 
-void AudioHandler::sendAudioSamples(const QVector<float> &samples)
+void AudioHandler::setVolumeValue(const float &value)
 {
-    emit sendAudioSamplesFromCore(samples, 0);
+    m_audioCoreObject.setVolumeValue(value);
+}
+
+void AudioHandler::sendAudioSamples(QVector<float> &samples)
+{
+    emit sendAudioSamplesFromCore(samples);
 }
 
 void AudioHandler::startAudio()

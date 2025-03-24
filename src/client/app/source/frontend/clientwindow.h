@@ -10,9 +10,19 @@
 #include <QWidget>
 #include <QThread>
 #include <QDateTime>
-#include <QTime>
-#include <QtCharts>
+#include <QTimer>
 #include <QWidget>
+#include <QStyle>
+#include "qstylefactory.h"
+#include <QRegularExpression>
+
+#include <QtCharts/QChart>
+#include <QtCharts/QSplineSeries>
+#include <QtCharts/QBarSeries>
+#include <QtCharts/QBarCategoryAxis>
+#include <QtCharts/QBarSet>
+#include <QtCharts/QChartView>
+#include <QtCharts/QValueAxis>
 
 #include "defines.h"
 
@@ -36,13 +46,18 @@ private:
 
     void componentsConnections();
     void componentsInitStates();
+    void componentsSetStyles();
+    void setupAudioChart();
+    void setupNetworkChart();
+    void setupLineEdits();
+
     HANDLERTYPE getHandlerType(QObject *sender);
 
 public slots:
 
     void recieveMessage(const QString &message);
     void handleAudioStatusUpdate(const AUDIO::CORE::STATUS &status);
-    void recieveAudioSamples(const QVector<float> &samples, const int &frameSize);
+    void recieveAudioSamples(QVector<float> &samples);
     void addPacket(const quint16 packetSize);
 
 // slots for GUI
@@ -54,6 +69,7 @@ private slots:
     void handleConnectionInputs();
     void clearLog();
     void updateNetworkGraph();
+    void setVolumeValue(int value);
 
 // Signals
 
@@ -62,28 +78,38 @@ signals:
     void openConnectionNetwork(const QHostAddress &ip, const quint16 port);
     void closeConnectionNetwork();
     void audioPlayerChangeState(AUDIO::HANDLER::MODE mode);
+    void setVolumeValueToAudio(const float &value);
 
 private:
+
+    Ui::ClientWindow *ui;
+
+    QString             m_widgetStyle{""};
+    QString             m_labelStyle{""};
+    QString             m_lineEditStyle{""};
+    QString             m_textBrowserStyle{""};
+
+    // logger lines
     QStringList         m_logLines;
 
+// Audio chart
+private:
+
     QChart              *m_chartAudioSamples{nullptr};
-    QChartView          *m_chartAudioSamplesView{nullptr};
+    QChartView          *m_chartViewAudioSamples{nullptr};
     QLineSeries         *m_seriesAudioSamples{nullptr};
 
+// Network chart
+private:
+
     QChart              *m_chartNetworkData{nullptr};
-    QSplineSeries       *m_seriesNetworkData{nullptr};
-    QValueAxis          *m_axisXNetworkData{nullptr};
+    QBarSeries          *m_seriesNetworkData{nullptr};
+    QBarCategoryAxis    *m_axisXNetworkData{nullptr};
     QValueAxis          *m_axisYNetworkData{nullptr};
-    QElapsedTimer       m_updateElapsedTimerNetworkData;
     QTimer              m_updateTimerNetworkData;
-    qint64              m_startTime{10};
 
     QVector<QPointF>    m_dataNetworkData;
-    qreal               m_timeNetworkData{0};
-    quint16             m_lastPacketSize{0};
-    bool                m_packetReceived{false};
+    QVector<int>        m_packetDataBuffer;
 
-private:
-    Ui::ClientWindow *ui;
 };
 #endif // CLIENTWINDOW_H

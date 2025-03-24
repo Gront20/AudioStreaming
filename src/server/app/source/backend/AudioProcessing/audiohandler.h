@@ -34,7 +34,6 @@ private slots:
 
 signals:
 
-    // void sendAudioStatus();
     void sendErrorMessage(const QString &message);
     void sendAudioStatusMessage(const QString &message);
     void handleAudioStatusUpdate(const AUDIO::CORE::STATUS &status);

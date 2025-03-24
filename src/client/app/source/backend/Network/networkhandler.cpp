@@ -8,19 +8,12 @@ NetworkHandler::NetworkHandler(QObject *parent)
     connect(m_networkCoreObject, &NetworkCore::sendAudioData, this, &NetworkHandler::sendAudioData);
     connect(m_networkCoreObject, &NetworkCore::sendSocketStatus, this, &NetworkHandler::handleNetworkCoreStatusData);
 
-    m_networkCoreObject->initOpus(48000, 2, 128000);
+    m_networkCoreObject->initOpus(DEFAULT_SAMPLERATE, DEFAULT_CHANNELS, DEFAULT_BITRATE);
 }
 
-void NetworkHandler::sendAudioData(const QVector<float> &decodedSamples, const int &frameSize)
+void NetworkHandler::sendAudioData(QVector<float> &decodedSamples)
 {
-    emit sendAudioDataToAudio(decodedSamples, frameSize);
-}
-
-void NetworkHandler::handleAudioStatusUpdate(const AUDIO::CORE::STATUS &status)
-{
-    // if (status == AUDIO::CORE::STATUS::START) m_networkCoreObject.startStreaming();
-    // if (status == AUDIO::CORE::STATUS::STOP) m_networkCoreObject.stopStreaming();
-    // if (status == AUDIO::CORE::STATUS::RESTART) m_networkCoreObject.restartStreaming();
+    emit sendAudioDataToAudio(decodedSamples);
 }
 
 void NetworkHandler::handleNetworkCoreStatusData(const QVariant data)
@@ -33,6 +26,7 @@ void NetworkHandler::handleNetworkCoreStatusData(const QVariant data)
         quint32 packetSize = dataMap["packetSize"].toInt();
 
         emit sendNetworkDataSended(packetSize);
+        // emit sendMessageToAppLogger(NETWORK::CORE::networkCoreStatusToString(static_cast<NETWORK::CORE::STATUS>(message))); // for debug
     }
     if (data.canConvert<int>()){
         int statusCode = data.toInt();

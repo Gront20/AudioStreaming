@@ -78,8 +78,6 @@ void NetworkCore::closeConnection()
         return;
     }
 
-    QMutexLocker locker(&m_mutex);
-
     m_udpSocket->close();
     m_udpSocket->abort();
 
@@ -101,10 +99,10 @@ void NetworkCore::processPendingDatagrams() {
 
         int pos = 0;
         while (true) {
-            int markerPos = m_receivedBuffer.indexOf("\xDE\xAD\xBE\xEF", pos);
+            int markerPos = m_receivedBuffer.indexOf(MARKER_FRAME_ENDED, pos);
             if (markerPos != -1) {
                 QByteArray frame = m_receivedBuffer.mid(pos, markerPos - pos);
-                pos = markerPos + 4;
+                pos = markerPos + 4; ///< маркер 4 байта занимает
 
                 QVector<float> pcmData(m_frameSize * m_numChannels);
                 int decodedSamples = opus_decode_float(
@@ -117,13 +115,13 @@ void NetworkCore::processPendingDatagrams() {
                     );
 
                 if (decodedSamples > 0) {
-                    emit sendAudioData(pcmData, decodedSamples);
+                    emit sendAudioData(pcmData);
                 }
             } else {
-                markerPos = m_receivedBuffer.indexOf("\xCA\xFE\xBA\xBE", pos);
+                markerPos = m_receivedBuffer.indexOf(MARKER_FRAME_NOT_ENDED, pos);
                 if (markerPos != -1) {
                     QByteArray partialFrame = m_receivedBuffer.mid(pos, markerPos - pos);
-                    pos = markerPos + 4;
+                    pos = markerPos + 4; ///< маркер 4 байта занимает
                     m_partialFrameBuffer.append(partialFrame);
                 } else {
                     break;
@@ -136,7 +134,7 @@ void NetworkCore::processPendingDatagrams() {
         m_partialFrameBuffer.clear();
 
         QVariantMap data;
-        // data["status"] = static_cast<int>(NETWORK::CORE::STATUS::RECEIVE_PACKET);
+        data["status"] = static_cast<int>(NETWORK::CORE::STATUS::RECEIVE_PACKET);
         data["packetSize"] = datagram.size();
         emit sendSocketStatus(data);
     }

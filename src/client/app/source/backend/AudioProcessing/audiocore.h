@@ -5,39 +5,43 @@
 #include <QVector>
 #include "defines.h"
 
-extern "C"{
-    #include <libavcodec/avcodec.h>
-    #include <libavformat/avformat.h>
-    #include <libswresample/swresample.h>
-    #include <portaudio.h>
+extern "C" {
+#include <libswresample/swresample.h>
+#include <portaudio.h>
 }
 
-class AudioCore : public QObject {
+class AudioCore : public QObject
+{
     Q_OBJECT
 public:
-    explicit AudioCore(QObject* parent = nullptr);
+    explicit AudioCore(QObject *parent = nullptr);
     ~AudioCore();
 
     bool init(int sampleRate, int channels);
-    void playAudio(const QVector<float>& samples, int frameSize);
+    void playAudio(QVector<float> &samples);
     void start();
     void stop();
+    void setVolumeValue(const float& value);
+
+private:
+
+    void cleanup();
 
 signals:
 
     void sendCurrentStateError(const AUDIO::CORE::ERROR_HANDLER &errorCode);
     void sendAudioStatus(const AUDIO::CORE::STATUS &statusCode);
-    void sendAudioSamples(const QVector<float> &samples);
+    void sendAudioSamples(QVector<float> &samples);
 
 private:
-    AVFormatContext* m_formatContext;
-    AVCodecContext* m_codecContext;
-    SwrContext* m_swrContext;
-    int m_sampleRate;
-    int m_channels;
-    bool m_isPlaying;
 
-    PaStream *stream = nullptr;
+    SwrContext      *m_swr_ctx{nullptr};
+    int             m_sampleRate;
+    int             m_numChannels;
+    bool            m_isPlaying;
+    float           m_volumeValue{DEFAULT_VOLUME};
+
+    PaStream        *stream{nullptr};
 };
 
 #endif // AUDIOCORE_H

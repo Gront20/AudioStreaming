@@ -18,9 +18,10 @@ public:
 
 public slots:
 
-    void sendAudioSamples(const QVector<float> &samples);
-    void recieveAudioData(const QVector<float> &decodedSamples, const int &frameSize);
+    void sendAudioSamples(QVector<float> &samples);
+    void recieveAudioData(QVector<float> &decodedSamples);
     void audioPlayerChangeState(AUDIO::HANDLER::MODE mode);
+    void setVolumeValue(const float &value);
 
     void startAudio();
     void stopAudio();
@@ -32,14 +33,14 @@ private slots:
 
 signals:
 
-    void sendAudioSamplesFromCore(const QVector<float> &samples, int frameSize);
+    void sendAudioSamplesFromCore(QVector<float> &samples);
     void sendErrorMessage(const QString &message);
     void sendAudioStatusMessage(const QString &message);
     void handleAudioStatusUpdate(const AUDIO::CORE::STATUS &status);
 
 private:
 
-    AudioCore                   m_audioCoreObject;
+    AudioCore m_audioCoreObject;
 
 };
 

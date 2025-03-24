@@ -41,6 +41,7 @@ src_end() # App-gui end
 # GUI
 src_begin(../source/frontend "App") # App-gui start
 add_gui_class(clientwindow)
+add_header(customslider)
 src_end() # App-gui end
 
 # Backend
