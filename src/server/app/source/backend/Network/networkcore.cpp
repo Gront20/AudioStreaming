@@ -134,6 +134,8 @@ void NetworkCore::sendNextRtpPacket(const QVector<float>& samples) {
         return;
     }
 
+    QMutexLocker locker(&m_mtx);
+
     QMetaObject::invokeMethod(this, [this, samples]() {
             QMutexLocker locker(&m_mtx);
 

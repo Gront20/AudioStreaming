@@ -380,7 +380,7 @@ void ServerWindow::componentsConnections()
     });
     connect(ui->pushButtonChangeNetworkMode, &QPushButton::clicked, this, [this](){
         ui->pushButtonOpenConnection->setEnabled(true);
-        ui->pushButtonCloseConnection->setEnabled(true);
+        ui->pushButtonCloseConnection->setEnabled(false);
 
         if (ui->radioButtonRecievePackets->isChecked()){
             stopAudio();
@@ -645,6 +645,12 @@ void ServerWindow::handleAudioStatusUpdate(const AUDIO::CORE::STATUS &status)
         ui->pushButtonRestartPlayer->setEnabled(false);
         break;
     case AUDIO::CORE::STATUS::STOP:
+        if (ui->radioButtonRecievePackets->isChecked()){
+            ui->pushButtonStartPlayer->setEnabled(false);
+            ui->pushButtonRestartPlayer->setEnabled(false);
+            ui->pushButtonStopPlayer->setEnabled(false);
+            break;
+        }
         ui->pushButtonStartPlayer->setEnabled(true);
         ui->pushButtonStopPlayer->setEnabled(false);
         ui->pushButtonRestartPlayer->setEnabled(true);
