@@ -217,7 +217,7 @@ void ServerWindow::setupNetworkChart()
     layout->setContentsMargins(2, 2, 2, 2);
     layout->setSpacing(0);
 
-    QLabel *titleLabel = new QLabel("Network Upload Diagramm");
+    QLabel *titleLabel = new QLabel("Network Diagramm");
     titleLabel->setAlignment(Qt::AlignCenter);
     titleLabel->setFont(QFont("Arial", 10, QFont::Bold));
     titleLabel->setObjectName("mainTitleLabel");
