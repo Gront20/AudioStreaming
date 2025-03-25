@@ -5,6 +5,11 @@
 #include "networkcore.h"
 #include "defines.h"
 
+/**
+ * @brief The NetworkHandler class
+    ОБРАБОТЧИК внешних связей с сетевым модулем
+ */
+
 class NetworkHandler : public QObject
 {
     Q_OBJECT

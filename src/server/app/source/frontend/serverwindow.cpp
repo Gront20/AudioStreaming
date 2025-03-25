@@ -345,6 +345,15 @@ void ServerWindow::updateNetworkGraph()
     QBarSet *barSet = m_seriesNetworkData->barSets().first();
     *barSet << averageSize;
 
+    if (m_mode == NETWORK::CORE::MODE::SEND){
+        barSet->setColor(Qt::yellow);
+        barSet->setBorderColor(Qt::black);
+    }
+    else if(m_mode == NETWORK::CORE::MODE::RECIEVE) {
+        barSet->setColor(Qt::blue);
+        barSet->setBorderColor(Qt::black);
+    }
+
     if (barSet->count() > 50) {
         barSet->remove(0);
     }
@@ -392,7 +401,8 @@ void ServerWindow::componentsConnections()
             ui->sliderAudioSlider->setEnabled(false);
 
             ui->labelNetworkMode->setText("Mode: Recieve");
-            setNetworkMode(NETWORK::CORE::MODE::RECIEVE);
+            m_mode = NETWORK::CORE::MODE::RECIEVE;
+            setNetworkMode(m_mode);
         }
         else if(ui->radioButtonSendPackets->isChecked()) {
             if (ui->lineEditPathSelectedInfo->text() != ""){
@@ -403,7 +413,8 @@ void ServerWindow::componentsConnections()
             ui->pushButtonSelectAudioFile->setEnabled(true);
 
             ui->labelNetworkMode->setText("Mode: Transmit");
-            setNetworkMode(NETWORK::CORE::MODE::SEND);
+            m_mode = NETWORK::CORE::MODE::SEND;
+            setNetworkMode(m_mode);
         }
     });
     connect(ui->sliderVolume, &QSlider::valueChanged, this, &ServerWindow::setVolumeValue);
@@ -417,14 +428,12 @@ void ServerWindow::componentsConnections()
 
     connect(ui->sliderAudioSlider, &QSlider::sliderPressed, [this]() {
         m_sliderPressed = true;
-        emit setPauseForSeek(true);
     });
 
     connect(ui->sliderAudioSlider, &QSlider::sliderReleased, [this]() {
         m_sliderPressed = false;
         float value = ui->sliderAudioSlider->value();
         emit setPlaybackPosition(value);
-        emit setPauseForSeek(true);
     });
 
     connect(ui->sliderAudioSlider, &QSlider::valueChanged, [this](int value) {

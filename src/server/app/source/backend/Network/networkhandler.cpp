@@ -38,7 +38,7 @@ void NetworkHandler::handleNetworkCoreStatusData(const QVariant data)
     if (data.canConvert<QVariantMap>()) {
         QVariantMap dataMap = data.toMap();
 
-        int status = dataMap["status"].toInt();
+        NETWORK::CORE::MODE mode = static_cast<NETWORK::CORE::MODE>(dataMap["mode"].toInt());
         quint32 packetSize = dataMap["packetSize"].toInt();
         emit sendNetworkDataSended(packetSize);
     }

@@ -9,6 +9,11 @@
 #include "defines.h"
 #include "audiocore.h"
 
+/**
+ * @brief The AudioHandler class
+    ОБРАБОТЧИК внешних связей с аудио модулем
+ */
+
 class AudioHandler : public QObject
 {
     Q_OBJECT
@@ -18,9 +23,8 @@ public:
 
 public slots:
 
-    void receiveAudioFilePath(const QString& path);
+    void receiveAudioFilePath(const QString &path);
     void audioPlayerChangeState(AUDIO::HANDLER::MODE mode);
-    void sendAudioSamples(const QVector<float> &samples);
     void setVolumeValue(const float &value);
     void recieveAudioData(QVector<float> decodedSamples);
     void setPlaybackPosition(float pos);
@@ -31,6 +35,7 @@ public slots:
 
 private slots:
 
+    void sendAudioSamples(const QVector<float> &samples);
     void errorCatched(const AUDIO::CORE::ERROR_HANDLER &errorCode);
     void audioStatusCatched(const QString &fileName, const AUDIO::CORE::STATUS &status);
     void playbackPositionChangedSLOT(float pos);
@@ -45,8 +50,7 @@ signals:
 
 private:
 
-    QString                     m_filePath{};
-    AudioCore                   m_audioCoreObject;
+    AudioCore m_audioCoreObject;
 
 };
 

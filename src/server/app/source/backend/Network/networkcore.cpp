@@ -79,7 +79,7 @@ void NetworkCore::closeConnection() {
 
                 emit sendSocketStatus(QVariant(static_cast<int>(NETWORK::CORE::STATUS::CLOSED)));
             }
-        }, Qt::BlockingQueuedConnection);  // Важно использовать BlockingQueued
+        }, Qt::BlockingQueuedConnection);
 }
 
 void NetworkCore::setDestination(const QHostAddress &address, quint16 port) {
@@ -194,7 +194,7 @@ void NetworkCore::sendNextRtpPacket(const QVector<float>& samples) {
                 m_udpSocket->writeDatagram(rtpPacket, m_clientAddress, m_clientPort);
 
                 QVariantMap data;
-                data["status"] = static_cast<int>(NETWORK::CORE::STATUS::SEND_PACKET);
+                data["mode"] = static_cast<int>(NETWORK::CORE::MODE::SEND);
                 data["packetSize"] = rtpPacket.size();
                 emit sendSocketStatus(data);
 
@@ -204,6 +204,7 @@ void NetworkCore::sendNextRtpPacket(const QVector<float>& samples) {
         }, Qt::QueuedConnection);
 }
 
+// При получении RTP пакета не читаю RTP-заголовок, т.к. пока не несет особой ценности информация
 
 void NetworkCore::processPendingDatagrams() {
     if (m_currentMode != NETWORK::CORE::MODE::RECIEVE || !m_isStreamingFlag) return;
@@ -256,7 +257,7 @@ void NetworkCore::processPendingDatagrams() {
         m_partialFrameBuffer.clear();
 
         QVariantMap data;
-        data["status"] = static_cast<int>(NETWORK::CORE::STATUS::RECEIVE_PACKET);
+        data["mode"] = static_cast<int>(NETWORK::CORE::MODE::RECIEVE);
         data["packetSize"] = datagram.size();
         emit sendSocketStatus(data);
     }

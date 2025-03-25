@@ -49,7 +49,6 @@ void AudioHandler::audioPlayerChangeState(AUDIO::HANDLER::MODE mode)
 
 void AudioHandler::receiveAudioFilePath(const QString& path)
 {
-    m_filePath = path;
     m_audioCoreObject.changeFile(path.toUtf8().constData());
 }
 

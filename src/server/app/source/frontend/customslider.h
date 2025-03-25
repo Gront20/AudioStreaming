@@ -3,6 +3,11 @@
 
 class CustomSlider : public QSlider {
 public:
+    /**
+     * @brief CustomSlider
+     * Кастомные слайдер для регулировки громкости
+     */
+
     CustomSlider(QWidget *parent = nullptr)
         : QSlider(parent) {
 
