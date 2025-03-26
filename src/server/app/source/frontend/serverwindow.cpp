@@ -584,7 +584,7 @@ void ServerWindow::recieveMessage(const QString &message)
             tag = "<font color='#FF0000'>[CORE]</font> ";
             break;
         case HANDLERTYPE::GUI:
-            tag = "<font color='#00FF00'>[GUI]</font> ";
+            tag = "<font color='#FFA500'>[GUI]</font> ";
             break;
         default:
             tag = "<font color='red'>[UNKNOWN]</font> ";
