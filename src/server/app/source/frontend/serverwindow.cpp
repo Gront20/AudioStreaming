@@ -97,6 +97,8 @@ void ServerWindow::componentsSetStyles()
     ui->labelCurrentPacketSize->setObjectName("titleLabel");
     ui->labelPacketSizeUnitInfo->setObjectName("titleLabel");
     ui->labelVolumeValue->setObjectName("titleLabel");
+    ui->radioButtonRecievePackets->setObjectName("titleLabel");
+    ui->radioButtonSendPackets->setObjectName("titleLabel");
 
     ui->labelAppLogger->setStyleSheet(m_labelStyle);
     ui->labelAudioFileSelectioInfo->setStyleSheet(m_labelStyle);
@@ -117,6 +119,8 @@ void ServerWindow::componentsSetStyles()
     ui->labelNetworkSettings->setStyleSheet(m_labelStyle);
     ui->labelNetworkMode->setStyleSheet(m_labelStyle);
     ui->labelAudioSlider->setStyleSheet(m_labelStyle);
+    ui->radioButtonRecievePackets->setStyleSheet(m_labelStyle);
+    ui->radioButtonSendPackets->setStyleSheet(m_labelStyle);
 
     ui->lineEditIP->setObjectName("lineEdit");
     ui->lineEditPort->setObjectName("lineEdit");
@@ -280,7 +284,7 @@ void ServerWindow::componentsInitStates()
     ui->spinBoxLoggerCapacity->setValue(100);
 
     ui->sliderVolume->setValue(DEFAULT_VOLUME);
-    ui->labelVolumeValue->setText(QString("%1").arg(DEFAULT_VOLUME));
+    ui->labelVolumeValue->setText(QString("%1,[%]").arg(DEFAULT_VOLUME));
     setVolumeValue(DEFAULT_VOLUME);
 
     ui->pushButtonOpenConnection->setEnabled(true);
@@ -510,7 +514,7 @@ void ServerWindow::setVolumeValue(int value)
     else
         ui->pushButtonVolume->setIcon(iconVolumeOn);
 
-    ui->labelVolumeValue->setText(QString("%1").arg(value));
+    ui->labelVolumeValue->setText(QString("%1,[%]").arg(value));
     emit setVolumeValueToAudio(static_cast<float>(value) / 100.);
 }
 
