@@ -43,8 +43,15 @@ void NetworkHandler::handleNetworkCoreStatusData(const QVariant data)
         emit sendNetworkDataSended(packetSize);
     }
     if (data.canConvert<int>()){
-        int statusCode = data.toInt();
-        message = NETWORK::CORE::networkCoreStatusToString(static_cast<NETWORK::CORE::STATUS>(statusCode));
+        NETWORK::CORE::STATUS statusCode = static_cast<NETWORK::CORE::STATUS>(data.toInt());
+        if (statusCode == NETWORK::CORE::STATUS::FAILED_BIND || statusCode == NETWORK::CORE::STATUS::CLOSED){
+            emit sendSocketStatus(false);
+        }
+        else if(statusCode == NETWORK::CORE::STATUS::BOUNDED){
+            emit sendSocketStatus(true);
+        }
+
+        message = NETWORK::CORE::networkCoreStatusToString(statusCode);
         emit sendMessageToAppLogger(message);
     }
 }

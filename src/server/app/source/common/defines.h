@@ -6,7 +6,7 @@
 
 
 #define DEFAULT_IP QHostAddress::LocalHost
-#define DEFAULT_PORT 8080
+#define DEFAULT_PORT 18000
 
 #define DEFAULT_CHANNELS 2
 #define DEFAULT_SAMPLERATE 48000

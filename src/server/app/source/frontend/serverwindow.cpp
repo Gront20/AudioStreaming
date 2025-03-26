@@ -52,6 +52,7 @@ void ServerWindow::componentsSetStyles()
     ui->widgetPlayer->setObjectName("carcasWidget");
     ui->widgetLoggerSettings->setObjectName("carcasWidget");
     ui->widgetVolume->setObjectName("carcasWidget");
+    ui->widgetModeChange->setObjectName("carcasWidget");
 
     ui->centralwidget->setStyleSheet(m_widgetStyle);
     ui->widgetAppLogger->setStyleSheet(m_widgetStyle);
@@ -65,6 +66,7 @@ void ServerWindow::componentsSetStyles()
     ui->widgetPlayer->setStyleSheet(m_widgetStyle);
     ui->widgetLoggerSettings->setStyleSheet(m_widgetStyle);
     ui->widgetVolume->setStyleSheet(m_widgetStyle);
+    ui->widgetModeChange->setStyleSheet(m_widgetStyle);
 
     ui->labelAppLogger->setObjectName("mainTitleLabel");
     ui->labelFileInfo->setObjectName("mainTitleLabel");
@@ -208,8 +210,6 @@ void ServerWindow::setupNetworkChart()
     m_chartNetworkData->addAxis(m_axisYNetworkData, Qt::AlignLeft);
 
     QBarSet *barSet = new QBarSet("networkChunk");
-    barSet->setColor(Qt::yellow);
-    barSet->setBorderColor(Qt::black);
     m_seriesNetworkData->append(barSet);
     m_seriesNetworkData->setBarWidth(1.0);
 
@@ -266,7 +266,7 @@ void ServerWindow::componentsInitStates()
     ui->pushButtonStopPlayer->setEnabled(false);
     ui->pushButtonRestartPlayer->setEnabled(false);
 
-    ui->lineEditIP->setText("192.168.100.101");
+    ui->lineEditIP->setText("192.168.4.75");
     ui->lineEditPort->setText(QString("%1").arg(DEFAULT_PORT));
 
     ui->lineEditPacketSize->setText(QString("%1").arg(DEFAULT_PACKETSIZE));
@@ -283,11 +283,7 @@ void ServerWindow::componentsInitStates()
     ui->labelVolumeValue->setText(QString("%1").arg(DEFAULT_VOLUME));
     setVolumeValue(DEFAULT_VOLUME);
 
-    ui->radioButtonSendPackets->setChecked(true);
-    ui->pushButtonChangeNetworkMode->setText("Transmit");
-    ui->labelNetworkMode->setText("Mode: Transmit");
-
-    ui->pushButtonOpenConnection->setEnabled(false);
+    ui->pushButtonOpenConnection->setEnabled(true);
     ui->pushButtonCloseConnection->setEnabled(false);
 
     ui->sliderAudioSlider->setRange(0, 100);
@@ -381,17 +377,8 @@ void ServerWindow::componentsConnections()
     connect(ui->pushButtonOpenConnection, &QPushButton::clicked, this, &ServerWindow::handleConnectionInputs, Qt::DirectConnection);
     connect(ui->pushButtonCloseConnection, &QPushButton::clicked, this, &ServerWindow::handleConnectionInputs, Qt::DirectConnection);
     connect(ui->pushButtonLoggerClear, &QPushButton::clicked, this, &ServerWindow::clearLog, Qt::DirectConnection);
-    connect(ui->radioButtonSendPackets, &QRadioButton::clicked, this, [this](){
-        ui->pushButtonChangeNetworkMode->setText("Transmit");
-    });
-    connect(ui->radioButtonRecievePackets, &QRadioButton::clicked, this, [this](){
-        ui->pushButtonChangeNetworkMode->setText("Recieve");
-    });
-    connect(ui->pushButtonChangeNetworkMode, &QPushButton::clicked, this, [this](){
-        ui->pushButtonOpenConnection->setEnabled(true);
-        ui->pushButtonCloseConnection->setEnabled(false);
 
-        if (ui->radioButtonRecievePackets->isChecked()){
+    connect(ui->radioButtonRecievePackets, &QRadioButton::clicked, this, [this](){
             stopAudio();
             ui->pushButtonStartPlayer->setEnabled(false);
             ui->pushButtonRestartPlayer->setEnabled(false);
@@ -403,8 +390,9 @@ void ServerWindow::componentsConnections()
             ui->labelNetworkMode->setText("Mode: Recieve");
             m_mode = NETWORK::CORE::MODE::RECIEVE;
             setNetworkMode(m_mode);
-        }
-        else if(ui->radioButtonSendPackets->isChecked()) {
+    });
+
+    connect(ui->radioButtonSendPackets, &QRadioButton::clicked, this, [this](){
             if (ui->lineEditPathSelectedInfo->text() != ""){
                 ui->sliderAudioSlider->setEnabled(true);
                 ui->pushButtonStartPlayer->setEnabled(true);
@@ -415,8 +403,8 @@ void ServerWindow::componentsConnections()
             ui->labelNetworkMode->setText("Mode: Transmit");
             m_mode = NETWORK::CORE::MODE::SEND;
             setNetworkMode(m_mode);
-        }
     });
+
     connect(ui->sliderVolume, &QSlider::valueChanged, this, &ServerWindow::setVolumeValue);
     connect(ui->pushButtonVolume, &QPushButton::clicked, this, [this](){
         if (ui->sliderVolume->value() != 0){
@@ -487,16 +475,8 @@ void ServerWindow::handleConnectionInputs()
             return;
         }
         quint16 port16 = static_cast<quint16>(port);
-
-        ui->pushButtonOpenConnection->setEnabled(false);
-        ui->pushButtonCloseConnection->setEnabled(true);
-        ui->pushButtonChangeNetworkMode->setEnabled(false);
-
         emit openConnectionNetwork(address, port16);
     } else if (senderButton == ui->pushButtonCloseConnection) {
-        ui->pushButtonOpenConnection->setEnabled(true);
-        ui->pushButtonCloseConnection->setEnabled(false);
-        ui->pushButtonChangeNetworkMode->setEnabled(true);
         emit closeConnectionNetwork();
     }
 }
@@ -571,10 +551,11 @@ void ServerWindow::recieveAudioSamples(const QVector<float> &samples)
 HANDLERTYPE ServerWindow::getHandlerType(QObject *sender)
 {
     const QString className = sender->metaObject()->className();
+    qDebug() << className;
     if (className == "BaseAppCore") return HANDLERTYPE::CORE;
     if (className == "AudioHandler") return HANDLERTYPE::AUDIO;
     if (className == "NetworkHandler") return HANDLERTYPE::NETWORK;
-    if (className.contains("QPushButton")) {
+    if (className.contains("QPushButton") || className.contains("QSingleShotTimer")) {
         return HANDLERTYPE::GUI;
     }
 
@@ -608,16 +589,16 @@ void ServerWindow::recieveMessage(const QString &message)
 
         QString newLine = timeString + tag + message;
         m_logLines.append(newLine);
+    }
 
-        int maxLines = ui->spinBoxLoggerCapacity->value();
-        if (m_logLines.size() > maxLines) {
-            m_logLines.removeFirst();
-        }
+    int maxLines = ui->spinBoxLoggerCapacity->value();
+    if (m_logLines.size() > maxLines) {
+        m_logLines.removeFirst();
+    }
 
-        ui->textBrowserAppLogger->clear();
-        foreach (const QString &line, m_logLines) {
-            ui->textBrowserAppLogger->append(line);
-        }
+    ui->textBrowserAppLogger->clear();
+    foreach (const QString &line, m_logLines) {
+        ui->textBrowserAppLogger->append(line);
     }
 }
 
@@ -678,6 +659,23 @@ void ServerWindow::handleAudioStatusUpdate(const AUDIO::CORE::STATUS &status)
     }
 }
 
+void ServerWindow::changeSocketConnectionStatus(bool isEnabled)
+{
+    if (isEnabled){
+        ui->radioButtonRecievePackets->setEnabled(false);
+        ui->radioButtonSendPackets->setEnabled(false);
+
+        ui->pushButtonOpenConnection->setEnabled(false);
+        ui->pushButtonCloseConnection->setEnabled(true);
+    } else {
+        ui->radioButtonRecievePackets->setEnabled(true);
+        ui->radioButtonSendPackets->setEnabled(true);
+
+        ui->pushButtonOpenConnection->setEnabled(true);
+        ui->pushButtonCloseConnection->setEnabled(false);
+    }
+}
+
 void ServerWindow::selectAudioFile()
 {
     QString filePath = QFileDialog::getOpenFileName(this, "Select audio file", "", "Audio file (*.mp3 *.wav *.ogg)");
@@ -699,6 +697,15 @@ void ServerWindow::selectAudioFile()
         ui->textBrowserFileInfo->setHtml(fileInfoText);
 
     }
+}
+
+void ServerWindow::sendHello()
+{
+    ui->radioButtonSendPackets->click();
+
+    QTimer::singleShot(200, this, [this]() {
+        recieveMessage("Select your audio file!");
+    });
 }
 
 ServerWindow::~ServerWindow()

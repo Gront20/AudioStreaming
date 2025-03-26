@@ -42,6 +42,7 @@ public:
     ServerWindow(QWidget *parent = nullptr);
     ~ServerWindow();
 
+    void sendHello();
 
 // ==================================================================================================
 
@@ -143,6 +144,8 @@ public slots:
  * @param [in] pos - Текущая позиция (в секундах)
  */
     void playbackPositionChanged(float pos);
+
+    void changeSocketConnectionStatus(bool isEnabled);
 
 
 // ==================================================================================================

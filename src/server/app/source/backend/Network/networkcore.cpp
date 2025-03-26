@@ -86,7 +86,7 @@ void NetworkCore::setDestination(const QHostAddress &address, quint16 port) {
     if (QThread::currentThread() != m_udpSocket->thread()) {
         QMetaObject::invokeMethod(this, [this, address, port]() {
                 setDestination(address, port);
-            }, Qt::QueuedConnection);
+            }, Qt::BlockingQueuedConnection);
         return;
     }
 

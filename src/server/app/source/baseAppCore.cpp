@@ -55,6 +55,7 @@ void BaseAppCore::initializeNetworkHandler()
         connect(m_networkHandlerObject, &NetworkHandler::sendMessageToAppLogger, m_mainWindowObject, &ServerWindow::recieveMessage);
         connect(m_networkHandlerObject, &NetworkHandler::sendNetworkDataSended, m_mainWindowObject, &ServerWindow::addPacket);
         connect(m_mainWindowObject, &ServerWindow::setNetworkMode, m_networkHandlerObject, &NetworkHandler::setNetworkMode);
+        connect(m_networkHandlerObject, &NetworkHandler::sendSocketStatus, m_mainWindowObject, &ServerWindow::changeSocketConnectionStatus);
 
         connect(m_networkHandlerObject, &NetworkHandler::sendNetworkDataSended, m_mainWindowObject, &ServerWindow::addPacket);
         connect(m_networkHandlerObject, &NetworkHandler::sendAudioDataToAudio, m_audioHandlerObject, &AudioHandler::recieveAudioData);
@@ -127,7 +128,7 @@ void BaseAppCore::initializeAudioHandler()
 
 void BaseAppCore::sendHelloMessage()
 {
-    emit sendMessage("Select your audio file!");
+    m_mainWindowObject->sendHello();
 }
 
 void BaseAppCore::handleInitializationProccess(const QString &message, const QString &senderName)

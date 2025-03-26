@@ -27,6 +27,7 @@ signals:
     void sendMessageToAppLogger(const QString message);
     void sendNetworkDataSended(const quint32 data);
     void sendAudioDataToAudio(QVector<float> decodedSamples);
+    void sendSocketStatus(bool isEnable);
 
 public slots:
 

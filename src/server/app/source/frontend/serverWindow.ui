@@ -667,7 +667,7 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="widget" native="true">
+    <widget class="QWidget" name="widgetModeChange" native="true">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -715,6 +715,12 @@
           <property name="spacing">
            <number>0</number>
           </property>
+          <property name="topMargin">
+           <number>10</number>
+          </property>
+          <property name="bottomMargin">
+           <number>10</number>
+          </property>
           <item>
            <widget class="QRadioButton" name="radioButtonSendPackets">
             <property name="sizePolicy">
@@ -744,29 +750,6 @@
             </property>
             <property name="text">
              <string>R</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_12">
-          <item>
-           <widget class="QPushButton" name="pushButtonChangeNetworkMode">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>65</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
             </property>
            </widget>
           </item>
